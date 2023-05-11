@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using System.Linq.Expressions;
 
 namespace Castlenight
 {
@@ -34,7 +35,6 @@ namespace Castlenight
 
         Thread thread = null;
         public Thread Thread { get => thread; }
-
 
         public Character(string _name, int posX, int posY)
         {
@@ -87,7 +87,6 @@ namespace Castlenight
         public int TakeDamage(int damage)
         {
             int score = damage;
-            Debug.WriteLine("Player shoot!");
             if (pv < 0)
                 score = -10;
             else

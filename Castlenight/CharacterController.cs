@@ -21,6 +21,7 @@ namespace Castlenight
                 throw new Exception("ComputeAndExecuteAction called twice");
             running = true;
 
+
             Character.Mutex.WaitOne();
 
 

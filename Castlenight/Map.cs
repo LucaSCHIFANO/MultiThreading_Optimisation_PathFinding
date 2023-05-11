@@ -89,6 +89,7 @@ namespace Castlenight
                             {
                                 players[i].Kill();
                                 RemovePlayer(players[i]);
+
                                 --i;
                             }
                         }

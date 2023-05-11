@@ -29,7 +29,7 @@ namespace Castlenight
 
             texture = CastleNightGame.Instance.Content.Load<Texture2D>("crate");
             spriteBatch.Begin();
-            spriteBatch.Draw(texture, new Rectangle(posX * 20, posY * 20, 20, 20), Color.White);
+            spriteBatch.Draw(texture, new Rectangle(posX * GameConfig.tileSize, posY * GameConfig.tileSize , GameConfig.tileSize, GameConfig.tileSize), Color.White);
             spriteBatch.End();
         }
     }

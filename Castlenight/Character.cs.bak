@@ -1,0 +1,93 @@
+﻿using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework;
+using System;
+using System.Collections.Generic;
+
+namespace Castlenight
+{
+
+    public class Character
+    {
+        string name;
+        int pv = 0;
+        public int Pv { get => pv; }
+        int posX = 0;
+        public int PosX { get => posX; }
+        int posY = 0;
+        public int PosY { get => posY; }
+        int score = 0;
+        public int Score { get => score; set => score = value; }
+
+
+        public Weapon weapon { get; set; }
+
+        ICharacterController controller;
+
+
+        public Character(string _name, int posX, int posY)
+        {
+            this.name = _name;
+            this.posX = posX;
+            this.posY = posY;
+            this.pv = 100;
+
+            controller = new RandomCharacterController();
+            weapon = new Weapon(5, 1, 2);
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            if (controller != null)
+                controller.ComputeAndExecuteAction(this);
+        }
+
+        public void Draw(GraphicsDeviceManager graphics, GameTime gameTime)
+        {
+            Texture2D texture;
+            var spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
+
+            texture = CastleNightGame.Instance.Content.Load<Texture2D>(name);
+            spriteBatch.Begin();
+            spriteBatch.Draw(texture, new Rectangle(posX * 20, posY * 20, 20, 20), Color.White);
+            spriteBatch.End();
+        }
+
+        public void SetPosition(int posX, int posY)
+        {
+            if(!CastleNightGame.Instance.Map.CanMoveToCell(posX, posY))
+            {
+                throw new Exception("Moving a character on an invalid space");
+            }
+            this.posX = posX;
+            this.posY = posY;
+        }
+
+        //returns a score based on damage & kill
+        public int TakeDamage(int damage)
+        {
+            int score = damage;
+            Debug.WriteLine("Player shoot!");
+            if (pv < 0)
+                score = - 10;
+			else
+			{
+            	pv -= damage;
+            	if (pv < 0)
+                {
+                    Debug.WriteLine("Player killed");
+                    score += 50;
+                    CastleNightGame.Instance.Map.RemovePlayer(this);
+                }
+            }
+	
+            return score;
+        }
+
+        //Tells player a tile is about to be destroyed
+        public void TileAboutToBeDestroyed(List<Vector2> tilesToBeDestroyed, double timeBeforeDestruction)
+        {
+            if (controller != null)
+                controller.TileAboutToBeDestroyed(tilesToBeDestroyed, timeBeforeDestruction);
+        }
+    }
+}

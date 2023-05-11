@@ -33,6 +33,7 @@ namespace Castlenight
             }
 
             Random random = new Random();
+
             if (character.weapon != null && character.weapon.Ammo > 0)
             {
                 var targets = CastleNightGame.Instance.Map.GetCharactersInRange(character, character.weapon.Range);

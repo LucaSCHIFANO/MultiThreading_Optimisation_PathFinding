@@ -9,15 +9,15 @@
         public const int PLAYER_MOVE_SPEED = 1000;
 
         //map size
-        public  int width = 20;
-        public  int height = 18;
-        public const int tileSize = 40;
+        public  int width = 15;
+        public  int height = 15;
+        public const int tileSize = 30;
         //player count
-        public  int playerCount = 50;
+        public  int playerCount = 100;
         //how many weapons are dropped each time
         public  int crateDropCount = 5;
         //how many tiles are destryed each time
-        public  int destoyedTilesCount = 100;
+        public  int destoyedTilesCount = 15;
 
 
         //timers for map destruction & weapon drop

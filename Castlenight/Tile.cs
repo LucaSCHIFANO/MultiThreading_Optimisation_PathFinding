@@ -9,12 +9,19 @@ namespace Castlenight
         int posX = 0;
         int posY = 0;
 
+        TilesData data;
+        public TilesData Data { get => data; set => data = value; }
+
+        public bool selected;
+
         public Tile(string _name, int posX, int posY) 
         { 
             this.name = _name;
             this.posX = posX;
             this.posY = posY;
+            this.data = new TilesData();
         }
+
 
         public void Draw(GraphicsDeviceManager graphics, GameTime gameTime)
         {
@@ -23,7 +30,8 @@ namespace Castlenight
 
             texture = CastleNightGame.Instance.Content.Load<Texture2D>(name);
             spriteBatch.Begin();
-            spriteBatch.Draw(texture, new Rectangle(posX* GameConfig.tileSize, posY* GameConfig.tileSize, GameConfig.tileSize, GameConfig.tileSize), Color.White);
+            if(selected)spriteBatch.Draw(texture, new Rectangle(posX* GameConfig.tileSize, posY* GameConfig.tileSize, GameConfig.tileSize, GameConfig.tileSize), Color.Red);
+            else spriteBatch.Draw(texture, new Rectangle(posX * GameConfig.tileSize, posY * GameConfig.tileSize, GameConfig.tileSize, GameConfig.tileSize), Color.White);
             spriteBatch.End();
         }
 
@@ -39,5 +47,17 @@ namespace Castlenight
                 return 2;
             return 0;
         }
+
+        public Vector2 GetPosition()
+        {
+            return new Vector2(posY, posX);
+        }
+    }
+
+
+    public class TilesData
+    {
+        public Tile parent = null;
+        public int currentCost = int.MaxValue - 1;
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 
 namespace Castlenight
 {
@@ -22,7 +23,17 @@ namespace Castlenight
 
         public Weapon weapon { get; set; }
 
+
         ICharacterController controller;
+        public ICharacterController Controller { get => controller; }
+
+
+        static Mutex mutex;
+        public static Mutex Mutex { get => mutex; }
+
+
+        Thread thread = null;
+        public Thread Thread { get => thread; }
 
 
         public Character(string _name, int posX, int posY)
@@ -34,6 +45,15 @@ namespace Castlenight
 
             controller = new RandomCharacterController();
             weapon = new Weapon(5, 1, 2);
+
+            if (Character.Mutex == null) mutex = new Mutex();
+
+            ParameterizedThreadStart parameterizedThreadStart = new ParameterizedThreadStart(UpdateCharacter);
+            thread = new Thread(UpdateCharacter);
+            thread.IsBackground = true;
+
+            Thread.Sleep(100);
+            thread.Start(new Params(this));
         }
 
         public void Update(GameTime gameTime)
@@ -55,7 +75,7 @@ namespace Castlenight
 
         public void SetPosition(int posX, int posY)
         {
-            if(!CastleNightGame.Instance.Map.CanMoveToCell(posX, posY))
+            if (!CastleNightGame.Instance.Map.CanMoveToCell(posX, posY))
             {
                 throw new Exception("Moving a character on an invalid space");
             }
@@ -69,18 +89,18 @@ namespace Castlenight
             int score = damage;
             Debug.WriteLine("Player shoot!");
             if (pv < 0)
-                score = - 10;
-			else
-			{
-            	pv -= damage;
-            	if (pv < 0)
+                score = -10;
+            else
+            {
+                pv -= damage;
+                if (pv < 0)
                 {
                     Debug.WriteLine("Player killed");
                     score += 50;
                     CastleNightGame.Instance.Map.RemovePlayer(this);
                 }
             }
-	
+
             return score;
         }
 
@@ -97,6 +117,32 @@ namespace Castlenight
             pv = 0;
             score -= 1000;
             Debug.WriteLine("Player dead by falling in a hole");
+        }
+
+        void UpdateCharacter(Object obj)
+        {
+            if (obj == null)
+            {
+                Console.WriteLine("Missing param!");
+                return;
+            }
+            Params param = obj as Params;
+            if (param == null)
+            {
+                Console.WriteLine("Bad param!");
+                return;
+            }
+
+            while (param.character.Pv > 0)
+            {
+                if (Controller != null)
+                    Controller.ComputeAndExecuteAction(this);
+
+                Thread.Sleep(100);
+            }
+
+
+
         }
     }
 }

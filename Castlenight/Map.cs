@@ -17,8 +17,8 @@ namespace Castlenight
         double timeBeforeDestruction;
         List<Vector2> tilesToBeDestroyed = new List<Vector2>();
         public List<Vector2> TilesToBeDestroyed { get => tilesToBeDestroyed; }
-        public int Width { get => width;}
-        public int Height { get => height;}
+        public int Width { get => width; }
+        public int Height { get => height; }
 
         private List<Character> players = new List<Character>();
 
@@ -57,21 +57,22 @@ namespace Castlenight
         {
             //update map status (new tiles will be destroyed, destroy)
 
-            if(timeBeforeSelectTileTodestroy > 0)
+            if (timeBeforeSelectTileTodestroy > 0)
             {
                 //time to flag some tile to be destroyed soon (so we can tell players)
                 timeBeforeSelectTileTodestroy -= gameTime.ElapsedGameTime.TotalSeconds * GameConfig.MAP_DESTRUCTION_SPEED;
-                if(timeBeforeSelectTileTodestroy <= 0)
+                if (timeBeforeSelectTileTodestroy <= 0)
                 {
                     timeBeforeSelectTileTodestroy = 0;
                     Random random = new Random();
                     for (int i = 0; i < gameConfig.destoyedTilesCount; ++i)
-                        tilesToBeDestroyed.Add(new Vector2(random.Next(width),random.Next(height)));
+                        tilesToBeDestroyed.Add(new Vector2(random.Next(width), random.Next(height)));
                     timeBeforeDestruction = gameConfig.executeTileDestructionTimer;
                     for (int i = 0; i < players.Count; ++i)
                         players[i].TileAboutToBeDestroyed(tilesToBeDestroyed, timeBeforeDestruction);
                 }
-            }else if(timeBeforeDestruction > 0)
+            }
+            else if (timeBeforeDestruction > 0)
             {
                 //destroy flagged tiles, killing players that are still on them
                 timeBeforeDestruction -= gameTime.ElapsedGameTime.TotalSeconds * GameConfig.MAP_DESTRUCTION_SPEED;
@@ -100,7 +101,8 @@ namespace Castlenight
                         }
                     }
                 }
-            }else
+            }
+            else
             {
                 timeBeforeSelectTileTodestroy = gameConfig.triggerTileDestructionTimer;
             }
@@ -120,15 +122,12 @@ namespace Castlenight
                 timeBeforeDestruction = gameConfig.weaponDropTimer;
             }
 
-            //update characters
-            for (int i = 0; i < players.Count; ++i)
-                players[i].Update(gameTime);
         }
 
 
         public void Draw(GraphicsDeviceManager graphics, GameTime gameTime)
-        {            
-            for(int i = 0; i <width; ++i)
+        {
+            for (int i = 0; i < width; ++i)
             {
                 for (int j = 0; j < height; ++j)
                 {
@@ -138,13 +137,13 @@ namespace Castlenight
             for (int i = 0; i < weapons.Count; ++i)
                 weapons[i].Draw(graphics, gameTime);
             for (int i = 0; i < players.Count; ++i)
-                players[i].Draw(graphics,gameTime);
+                players[i].Draw(graphics, gameTime);
         }
 
         #region Player Management
         public void AddPlayer(Character character)
         {
-            for(int i = 0; i < players.Count; ++i)
+            for (int i = 0; i < players.Count; ++i)
                 if (players[i] == character)
                     throw new Exception("Player already present");
             players.Add(character);
@@ -170,12 +169,12 @@ namespace Castlenight
             {
                 if (players[i] == character)
                 {
-                    if(character.Pv <= 0)
+                    if (character.Pv <= 0)
                         throw new Exception("Character is dead");
                     if (CanMoveToCell(x, y))
                     {
                         players[i].SetPosition(x, y);
-                        for(int j = 0; j < weapons.Count; ++j)
+                        for (int j = 0; j < weapons.Count; ++j)
                         {
                             if (weapons[j].PosX == x && weapons[j].PosY == y)
                             {
@@ -183,12 +182,14 @@ namespace Castlenight
                                 weapons.RemoveAt(j);
                             }
                         }
-                        if(!immediate)
+                        if (!immediate)
                             Thread.Sleep(tiles[y][x].GetCost() * 1000 / GameConfig.PLAYER_MOVE_SPEED);
-                    }else if(tiles[y][x].GetCost() == int.MaxValue)
+                    }
+                    else if (tiles[y][x].GetCost() == int.MaxValue)
                     {
                         character.Kill();
-                    }else
+                    }
+                    else
                     {
                         throw new Exception("Cell is invalid");
                     }
@@ -245,7 +246,7 @@ namespace Castlenight
             {
                 if (players[i] != origin)
                 {
-                    if(Math.Sqrt((players[i].PosX - origin.PosX) * (players[i].PosX - origin.PosX) + (players[i].PosY - origin.PosY) * (players[i].PosY - origin.PosY)) <= radius)
+                    if (Math.Sqrt((players[i].PosX - origin.PosX) * (players[i].PosX - origin.PosX) + (players[i].PosY - origin.PosY) * (players[i].PosY - origin.PosY)) <= radius)
                     {
                         list.Add(players[i]);
                     }

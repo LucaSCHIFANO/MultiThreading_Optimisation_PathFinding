@@ -98,7 +98,7 @@ namespace Castlenight
         {
             Debug.WriteLine("\n Start ! \n");
 
-            Thread.Sleep(5000);
+            Thread.Sleep(3000);
             bool isRunning = true;
             do
             {
@@ -114,6 +114,12 @@ namespace Castlenight
             } while (isRunning);
 
             Debug.WriteLine("\n Game !\n ");
+
+            foreach (var item in Pathfinding.FindPath(new Vector2(1,1), new Vector2(5,5), map))
+            {
+                item.selected = true;
+                Debug.WriteLine(item.GetPosition());
+            }
 
         }
     }

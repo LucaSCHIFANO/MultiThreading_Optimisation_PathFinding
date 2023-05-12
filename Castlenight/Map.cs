@@ -259,5 +259,16 @@ namespace Castlenight
         }
 
         #endregion
+
+
+        public Tile GetTile(int x, int y)
+        {
+            return Tiles[x][y];
+        }
+
+        public Tile GetTile(Vector2 xy)
+        {
+            return Tiles[(int)xy.X][(int)xy.Y];
+        }
     }
 }

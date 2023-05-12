@@ -16,6 +16,9 @@ namespace Castlenight
 
             Tile start = CastleNightGame.Instance.Map.GetTile(_start);
             Tile end = CastleNightGame.Instance.Map.GetTile(_end);
+            start.Data.currentCost = 0;
+
+
 
             List<Tile> openList = new List<Tile> { start };
             List<Tile> closeList = new List<Tile>();
@@ -27,7 +30,6 @@ namespace Castlenight
                 if (currentTile == end)
                 {
                     return CalculatePath(currentTile);
-                    
                 }
 
                 openList.Remove(currentTile);
@@ -36,8 +38,8 @@ namespace Castlenight
                 foreach (Tile tile in GetNeighbors(currentTile, map))
                 {
                     if (closeList.Contains(tile)) continue;
-                    int tentativeCost = currentTile.Data.currentCost + tile.GetCost();
 
+                    int tentativeCost = currentTile.Data.currentCost + tile.GetCost();
                     if(tentativeCost < tile.Data.currentCost)
                     {
                         tile.Data.parent = currentTile;
@@ -54,12 +56,12 @@ namespace Castlenight
 
         static Tile GetLowerCost(ref List<Tile> list)
         {
-            Tile lowerDistanceSwitch = list[0];
+            Tile lowerDistanceTile = list[0];
             for (int i = 0; i < list.Count - 1; i++)
             {
-                if (list[i].Data.currentCost < lowerDistanceSwitch.Data.currentCost) lowerDistanceSwitch = list[i];
+                if (list[i].Data.currentCost < lowerDistanceTile.Data.currentCost) lowerDistanceTile = list[i];
             }
-            return lowerDistanceSwitch;
+            return lowerDistanceTile;
         }
 
         static List<Tile> CalculatePath(Tile endSwitch)

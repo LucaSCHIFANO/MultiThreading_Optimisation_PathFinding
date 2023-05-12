@@ -58,6 +58,7 @@ namespace Castlenight
                 Character character = new Character("character1", x, y);
                 map.AddPlayer(character);
                 threadList.Add(character.Thread);
+                character.StartThread();
             }
 
             ParameterizedThreadStart parameterizedThreadStart = new ParameterizedThreadStart(CheckEndGame);

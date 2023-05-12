@@ -25,7 +25,7 @@ namespace Castlenight
             Character.Mutex.WaitOne();
 
 
-            if (character.Pv == 0)
+            if (character.Pv <= 0)
             {
                 running = false;
                 Character.Mutex.ReleaseMutex();

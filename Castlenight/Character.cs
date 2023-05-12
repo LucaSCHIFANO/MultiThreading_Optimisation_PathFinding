@@ -41,18 +41,20 @@ namespace Castlenight
             this.name = _name;
             this.posX = posX;
             this.posY = posY;
-            this.pv = 10; // 0;
+            this.pv = 100; // 100;
 
             controller = new RandomCharacterController();
             weapon = new Weapon(5, 1, 2);
 
             if (Character.Mutex == null) mutex = new Mutex();
-
+            
             ParameterizedThreadStart parameterizedThreadStart = new ParameterizedThreadStart(UpdateCharacter);
             thread = new Thread(UpdateCharacter);
             thread.IsBackground = true;
+        }
 
-            Thread.Sleep(100);
+        public void StartThread()
+        {
             thread.Start(new Params(this));
         }
 
@@ -120,6 +122,8 @@ namespace Castlenight
 
         void UpdateCharacter(Object obj)
         {
+            Thread.Sleep(1000);
+
             if (obj == null)
             {
                 Console.WriteLine("Missing param!");

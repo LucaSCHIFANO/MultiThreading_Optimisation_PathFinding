@@ -24,6 +24,8 @@ namespace Castlenight
         private List<Character> players = new List<Character>();
 
         private List<WeaponBox> weapons = new List<WeaponBox>();
+        public List<WeaponBox> Weapons { get => weapons; }
+
         double timeBeforeWeaponDrop;
 
         GameConfig gameConfig;
@@ -109,19 +111,29 @@ namespace Castlenight
                 timeBeforeSelectTileTodestroy = gameConfig.triggerTileDestructionTimer;
             }
 
+
             //weapon drop
             timeBeforeWeaponDrop -= gameTime.ElapsedGameTime.TotalSeconds * GameConfig.MAP_DESTRUCTION_SPEED;
             if (timeBeforeWeaponDrop <= 0)
             {
-                timeBeforeWeaponDrop = 10;
-                Random random = new Random();
-                for (int i = 0; i < gameConfig.crateDropCount; ++i)
+                try
                 {
-                    WeaponBox weaponBox = new WeaponBox(random.Next(width), random.Next(height));
-                    if (tiles[weaponBox.PosY][weaponBox.PosX].GetCost() != int.MaxValue)
-                        weapons.Add(weaponBox);
+                    CastleNightGame.Instance.Rwls.EnterWriteLock();
+                    timeBeforeWeaponDrop = 10;
+                    Random random = new Random();
+                    for (int i = 0; i < gameConfig.crateDropCount; ++i)
+                    {
+                        WeaponBox weaponBox = new WeaponBox(random.Next(width), random.Next(height));
+                        if (tiles[weaponBox.PosY][weaponBox.PosX].GetCost() != int.MaxValue)
+                            weapons.Add(weaponBox);
+                    }
+                    timeBeforeDestruction = gameConfig.weaponDropTimer;
                 }
-                timeBeforeDestruction = gameConfig.weaponDropTimer;
+                finally
+                {
+                    CastleNightGame.Instance.Rwls.ExitReadLock();
+                }
+            }
             }
 
         }
@@ -269,6 +281,18 @@ namespace Castlenight
         public Tile GetTile(Vector2 xy)
         {
             return Tiles[(int)xy.X][(int)xy.Y];
+        }
+
+        public void ResetTiles()
+        {
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    tiles[i][j].Data.parent = null;
+                    tiles[i][j].Data.currentCost = int.MaxValue;
+                }
+            }
         }
     }
 }

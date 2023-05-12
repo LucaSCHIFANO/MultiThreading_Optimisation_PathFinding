@@ -12,12 +12,12 @@ namespace Castlenight
     {
         public static List<Tile> FindPath(Vector2 _start, Vector2 _end, Map map)
         {
+            map.ResetTiles();
             List<Vector2> travel = new List<Vector2>();
 
             Tile start = CastleNightGame.Instance.Map.GetTile(_start);
             Tile end = CastleNightGame.Instance.Map.GetTile(_end);
             start.Data.currentCost = 0;
-
 
 
             List<Tile> openList = new List<Tile> { start };

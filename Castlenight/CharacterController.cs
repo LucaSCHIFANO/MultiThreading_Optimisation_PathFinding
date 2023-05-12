@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Castlenight
 {
@@ -14,6 +15,7 @@ namespace Castlenight
     public class RandomCharacterController : ICharacterController
     {
         bool running = false;
+        List<Vector2> nextTile = new List<Vector2>();
         public void ComputeAndExecuteAction(Character character)
         {
             //Random action controller: will do something random (but valid) on each tick
@@ -46,8 +48,30 @@ namespace Castlenight
                 }
             }
 
+            //pathfinding
+            int count = CastleNightGame.Instance.Map.Weapons.Count;
+            List<WeaponBox> provWeapon = CastleNightGame.Instance.Map.Weapons;
+            if (count > 0)
+            {
+                int shortestId = 0;
+                int shortestValue = int.MaxValue;
 
-            int dir = random.Next(4);
+                List<Tile>[] list = new List<Tile>[count];
+
+                for (int i = 0; i < count; i++)
+                {
+                    list[i] = Pathfinding.FindPath(new Vector2(character.PosX, character.PosY), new Vector2(provWeapon[i].PosX, provWeapon[i].PosY), CastleNightGame.Instance.Map);
+                    if (list[shortestId][list[shortestId].Count - 1].Data.currentCost > list[i][list[i].Count - 1].Data.currentCost)
+                    {
+                        shortestValue = list[i][list[i].Count - 1].Data.currentCost;
+                        shortestId = i;
+                    }
+                }
+
+                Debug.WriteLine($"closest weapon is at {shortestValue} : {list[shortestId][list[shortestId].Count - 1].GetPosition()}");
+            }
+
+            /*int dir = random.Next(4);
             if (dir == 0 && character.PosX > 0)
             {
                 if (CastleNightGame.Instance.Map.CanMoveToCell(character.PosX - 1, character.PosY))
@@ -75,8 +99,9 @@ namespace Castlenight
                 {
                     CastleNightGame.Instance.Map.MovePlayer(character, character.PosX, character.PosY + 1);
                 }
-            }
-            //Debug.WriteLine("New character position: " + character.PosX + ", " + character.PosY);
+            }*/
+
+
             Character.Mutex.ReleaseMutex();
             running = false;
 

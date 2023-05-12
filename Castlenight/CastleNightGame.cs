@@ -29,6 +29,9 @@ namespace Castlenight
 
         List<Thread> threadList = new List<Thread>();
 
+        ReaderWriterLockSlim rwls = new ReaderWriterLockSlim();
+        public ReaderWriterLockSlim Rwls { get => rwls; }
+
         public CastleNightGame()
         {
             Instance = this;
@@ -73,6 +76,7 @@ namespace Castlenight
 
         protected override void LoadContent()
         {
+            
         }
 
         protected override void Update(GameTime gameTime)

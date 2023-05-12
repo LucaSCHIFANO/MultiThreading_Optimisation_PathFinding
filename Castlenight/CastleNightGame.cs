@@ -119,12 +119,6 @@ namespace Castlenight
 
             Debug.WriteLine("\n Game !\n ");
 
-            foreach (var item in Pathfinding.FindPath(new Vector2(1,1), new Vector2(5,5), map))
-            {
-                item.selected = true;
-                Debug.WriteLine(item.GetPosition());
-            }
-
         }
     }
 }

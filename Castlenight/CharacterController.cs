@@ -15,7 +15,9 @@ namespace Castlenight
     public class RandomCharacterController : ICharacterController
     {
         bool running = false;
-        List<Vector2> nextTile = new List<Vector2>();
+        List<Tile> nextTile = new List<Tile>();
+        int nextTileId = 0;
+
         public void ComputeAndExecuteAction(Character character)
         {
             //Random action controller: will do something random (but valid) on each tick
@@ -49,26 +51,14 @@ namespace Castlenight
             }
 
             //pathfinding
-            int count = CastleNightGame.Instance.Map.Weapons.Count;
-            List<WeaponBox> provWeapon = CastleNightGame.Instance.Map.Weapons;
-            if (count > 0)
+
+            if (nextTile.Count == 0) GetNextTile(character);
+            else if (!CastleNightGame.Instance.Map.CanMoveToCell((int)nextTile[nextTileId].GetPosition().X, (int)nextTile[nextTileId].GetPosition().Y)) GetNextTile(character);
+            else
             {
-                int shortestId = 0;
-                int shortestValue = int.MaxValue;
-
-                List<Tile>[] list = new List<Tile>[count];
-
-                for (int i = 0; i < count; i++)
-                {
-                    list[i] = Pathfinding.FindPath(new Vector2(character.PosX, character.PosY), new Vector2(provWeapon[i].PosX, provWeapon[i].PosY), CastleNightGame.Instance.Map);
-                    if (list[shortestId][list[shortestId].Count - 1].Data.currentCost > list[i][list[i].Count - 1].Data.currentCost)
-                    {
-                        shortestValue = list[i][list[i].Count - 1].Data.currentCost;
-                        shortestId = i;
-                    }
-                }
-
-                Debug.WriteLine($"closest weapon is at {shortestValue} : {list[shortestId][list[shortestId].Count - 1].GetPosition()}");
+                CastleNightGame.Instance.Map.MovePlayer(character, (int)nextTile[nextTileId].GetPosition().X, (int)nextTile[nextTileId].GetPosition().Y);
+                nextTileId++;
+                if (nextTileId >= nextTile.Count) nextTile.Clear();
             }
 
             /*int dir = random.Next(4);
@@ -109,6 +99,43 @@ namespace Castlenight
 
         public void TileAboutToBeDestroyed(List<Vector2> tilesToBeDestroyed, double timeBeforeDestruction)
         {
+        }
+
+        private void GetNextTile(Character character)
+        {
+            try
+            {
+                CastleNightGame.Instance.Rwls.EnterReadLock();
+
+                int count = CastleNightGame.Instance.Map.Weapons.Count - 1;
+                List<WeaponBox> provWeapon = CastleNightGame.Instance.Map.Weapons;
+
+                if (count > 0)
+                {
+                    int shortestId = 0;
+                    int shortestValue = int.MaxValue;
+
+                    List<Tile>[] list = new List<Tile>[count];
+
+                    for (int i = 0; i < count; i++)
+                    {
+                        list[i] = Pathfinding.FindPath(new Vector2(character.PosX, character.PosY), new Vector2(provWeapon[i].PosX, provWeapon[i].PosY), CastleNightGame.Instance.Map);
+                        if (list[shortestId][list[shortestId].Count - 1].Data.currentCost > list[i][list[i].Count - 1].Data.currentCost)
+                        {
+                            shortestValue = list[i][list[i].Count - 1].Data.currentCost;
+                            shortestId = i;
+                        }
+                    }
+
+                    nextTile.Clear();
+                    nextTile = list[shortestId];
+                    nextTileId = 0;
+                }
+            }
+            finally
+            {
+                CastleNightGame.Instance.Rwls.ExitReadLock();
+            }
         }
     }
 }

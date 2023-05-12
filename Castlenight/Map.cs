@@ -123,20 +123,27 @@ namespace Castlenight
                     Random random = new Random();
                     for (int i = 0; i < gameConfig.crateDropCount; ++i)
                     {
-                        WeaponBox weaponBox = new WeaponBox(random.Next(width), random.Next(height));
-                        if (tiles[weaponBox.PosY][weaponBox.PosX].GetCost() != int.MaxValue)
+                        int x, y;
+                        do
+                        {
+                            x = random.Next(gameConfig.width);
+                            y = random.Next(gameConfig.height);
+                        } while (!CastleNightGame.Instance.Map.CanMoveToCell(x, y));
+
+                        WeaponBox weaponBox = new WeaponBox(x, y);
                             weapons.Add(weaponBox);
                     }
                     timeBeforeDestruction = gameConfig.weaponDropTimer;
                 }
                 finally
                 {
-                    CastleNightGame.Instance.Rwls.ExitReadLock();
+                    CastleNightGame.Instance.Rwls.ExitWriteLock();
                 }
             }
-            }
-
         }
+
+    
+
 
 
         public void Draw(GraphicsDeviceManager graphics, GameTime gameTime)
@@ -188,6 +195,7 @@ namespace Castlenight
                     if (CanMoveToCell(x, y))
                     {
                         players[i].SetPosition(x, y);
+                        CastleNightGame.Instance.Rwls.EnterWriteLock();
                         for (int j = 0; j < weapons.Count; ++j)
                         {
                             if (weapons[j].PosX == x && weapons[j].PosY == y)
@@ -196,6 +204,7 @@ namespace Castlenight
                                 weapons.RemoveAt(j);
                             }
                         }
+                        CastleNightGame.Instance.Rwls.ExitWriteLock();
                         if (!immediate)
                             Thread.Sleep(tiles[y][x].GetCost() * 1000 / GameConfig.PLAYER_MOVE_SPEED);
                     }

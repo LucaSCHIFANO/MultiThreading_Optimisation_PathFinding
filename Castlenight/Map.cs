@@ -29,6 +29,7 @@ namespace Castlenight
         double timeBeforeWeaponDrop;
 
         GameConfig gameConfig;
+        public GameConfig GameConfig { get => gameConfig; }
 
         public Map(GameConfig gameConfig)
         {
@@ -136,6 +137,7 @@ namespace Castlenight
                             weapons.Add(weaponBox);
                     }
                     timeBeforeDestruction = gameConfig.weaponDropTimer;
+                    ResetPlayerCheck();
                 }
                 finally
                 {
@@ -311,6 +313,14 @@ namespace Castlenight
                     tiles[i][j].Data.parent = null;
                     tiles[i][j].Data.currentCost = int.MaxValue;
                 }
+            }
+        }
+
+        public void ResetPlayerCheck()
+        {
+            foreach (var item in players)
+            {
+                item.NeedRecheck = true;
             }
         }
     }

@@ -36,6 +36,9 @@ namespace Castlenight
         Thread thread = null;
         public Thread Thread { get => thread; }
 
+        bool needRecheck;
+        public bool NeedRecheck { get => needRecheck; set => needRecheck = value; }
+
         public Character(string _name, int posX, int posY)
         {
             this.name = _name;

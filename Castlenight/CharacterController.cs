@@ -19,7 +19,7 @@ namespace Castlenight
         //Target weapon
         List<Tile> nextTile = new List<Tile>();
         int nextTileId = 0;
-        Tile currentTarget = null;
+
         public void ComputeAndExecuteAction(Character character)
         {
             //Random action controller: will do something random (but valid) on each tick
@@ -54,7 +54,11 @@ namespace Castlenight
 
             //pathfinding
 
-            if (nextTile == null || nextTile.Count == 0 || currentTarget == null) GetNextTile(character);
+            if (nextTile == null || nextTile.Count == 0 || character.NeedRecheck)
+            {
+                character.NeedRecheck = false;
+                GetNextTile(character);
+            }
             else if (!CastleNightGame.Instance.Map.CanMoveToCell((int)nextTile[nextTileId].GetPosition().X, (int)nextTile[nextTileId].GetPosition().Y)) GetNextTile(character);
             else
             {
@@ -112,6 +116,7 @@ namespace Castlenight
                 int count = CastleNightGame.Instance.Map.Weapons.Count;
                 List<WeaponBox> provWeapon = CastleNightGame.Instance.Map.Weapons;
 
+
                 if (count > 0)
                 {
                     int shortestId = -1;
@@ -125,25 +130,17 @@ namespace Castlenight
 
                         if ((list[i] != null && list[i].Count != 0))
                         {
-                            if(shortestId == -1)
+                            if (shortestId == -1)
                             {
                                 shortestValue = list[i][list[i].Count - 1].Data.currentCost;
                                 shortestId = i;
                             }
-                            else if(list[shortestId].Last().Data.currentCost > list[i].Last().Data.currentCost)
+                            else if (list[shortestId].Last().Data.currentCost > list[i].Last().Data.currentCost)
                             {
                                 shortestValue = list[i][list[i].Count - 1].Data.currentCost;
                                 shortestId = i;
                             }
                         }
-
-                        
-                        /*if((list[i] != null && list[i].Count != 0)
-                            && list[shortestId].Last().Data.currentCost > list[i].Last().Data.currentCost)
-                        {
-                            shortestValue = list[i][list[i].Count - 1].Data.currentCost;
-                            shortestId = i;
-                        }*/
                     }
 
                     if (shortestId != -1 && list[shortestId] != null)
@@ -151,7 +148,25 @@ namespace Castlenight
                         nextTile.Clear();
                         nextTile = list[shortestId];
                         nextTileId = 0;
-                        currentTarget = list[shortestId].Last();
+                    }
+                } else
+                {
+                    int x, y;
+                    do
+                    {
+                        Random random = new Random();
+                        x = random.Next(CastleNightGame.Instance.Map.GameConfig.width);
+                        y = random.Next(CastleNightGame.Instance.Map.GameConfig.height);
+                    } while (!CastleNightGame.Instance.Map.CanMoveToCell(x, y));
+
+                    List<Tile> list = new List<Tile>();
+                    list = Pathfinding.FindPath(new Vector2(character.PosX, character.PosY), new Vector2(x, y), CastleNightGame.Instance.Map);
+
+                    if ((list != null && list.Count != 0))
+                    {
+                        nextTile.Clear();
+                        nextTile = list;
+                        nextTileId = 0;
                     }
                 }
             }

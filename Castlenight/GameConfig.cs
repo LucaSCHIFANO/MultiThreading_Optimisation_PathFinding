@@ -9,7 +9,7 @@
         public const int PLAYER_MOVE_SPEED = 1000;
 
         //map size
-        public int width = 15;
+        public int width = 30;
         public int height = 21;
         public const int tileSize = 30;
         //player count

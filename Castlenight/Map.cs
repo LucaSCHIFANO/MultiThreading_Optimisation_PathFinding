@@ -184,8 +184,7 @@ namespace Castlenight
         #region Player Management
         public void AddPlayer(Character character)
         {
-            for (int i = 0; i < players.Count; ++i)
-                if (players[i] == character)
+                if (players.Contains(character))
                     throw new Exception("Player already present");
             players.Add(character);
         }
@@ -206,15 +205,15 @@ namespace Castlenight
         public void MovePlayer(Character character, int x, int y, bool immediate = false)
         {
             //Move character on given tile is it's empty (no player) & valid. grab weapon that is on it
-            for (int i = 0; i < players.Count; ++i)
+/*            for (int i = 0; i < players.Count; ++i)
             {
                 if (players[i] == character)
-                {
+                {*/
                     if (character.Pv <= 0)
                         throw new Exception("Character is dead");
                     if (CanMoveToCell(x, y))
                     {
-                        players[i].SetPosition(x, y);
+                        character.SetPosition(x, y);
 
                         try
                         {
@@ -224,7 +223,7 @@ namespace Castlenight
                         {
                             if (weapons[j].PosX == x && weapons[j].PosY == y)
                             {
-                                players[i].weapon = weapons[j].weapon;
+                            character.weapon = weapons[j].weapon;
                                 weapons.RemoveAt(j);
                             }
                         }
@@ -246,9 +245,9 @@ namespace Castlenight
                     }
 
                     return;
-                }
-            }
-            throw new Exception("Player not present");
+/*                }
+            }*/
+            //throw new Exception("Player not present");
         }
 
         public bool CanMoveToCell(int x, int y)

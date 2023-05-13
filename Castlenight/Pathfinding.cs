@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,11 +18,13 @@ namespace Castlenight
 
             Tile start = CastleNightGame.Instance.Map.GetTile(_start);
             Tile end = CastleNightGame.Instance.Map.GetTile(_end);
-            start.Data.currentCost = 0;
-
 
             List<Tile> openList = new List<Tile> { start };
             List<Tile> closeList = new List<Tile>();
+
+            start.Data.GCost = 0;
+            start.Data.HCost = CalculateDistance(start,end);
+            start.Data.CalculateFCost();
 
 
             while (openList.Count > 0)
@@ -37,13 +40,16 @@ namespace Castlenight
 
                 foreach (Tile tile in GetNeighbors(currentTile, map))
                 {
-                    int tentativeCost = currentTile.Data.currentCost + tile.GetCost();
-                    if (closeList.Contains(tile) && tentativeCost > tile.Data.currentCost) continue;
+                    int tentativeCost = currentTile.Data.GCost + CalculateDistance(currentTile, tile);
+                    if (closeList.Contains(tile) && tentativeCost > tile.Data.GCost) continue;
 
-                    else if(tentativeCost < tile.Data.currentCost)
+                    else if(tentativeCost < tile.Data.GCost)
                     {
                         tile.Data.parent = currentTile;
-                        tile.Data.currentCost = tentativeCost;
+                        tile.Data.GCost = tentativeCost;
+                        tile.Data.HCost = CalculateDistance(tile, end);
+                        tile.Data.CalculateFCost();
+
 
                         if (!openList.Contains(tile)) openList.Add(tile);
 
@@ -56,12 +62,20 @@ namespace Castlenight
 
         static Tile GetLowerCost(ref List<Tile> list)
         {
-            Tile lowerDistanceTile = list[0];
+            Tile lowerFCost = list[0];
             for (int i = 0; i < list.Count - 1; i++)
             {
-                if (list[i].Data.currentCost < lowerDistanceTile.Data.currentCost) lowerDistanceTile = list[i];
+                if (list[i].Data.FCost < lowerFCost.Data.FCost) lowerFCost = list[i];
             }
-            return lowerDistanceTile;
+            return lowerFCost;
+        }
+
+        static int CalculateDistance(Tile a, Tile b)
+        {
+            int xDistance = (int)Math.Abs(a.GetPosition().X - b.GetPosition().X);
+            int yDistance = (int)Math.Abs(a.GetPosition().Y - b.GetPosition().Y);
+            int remaining = Math.Abs(xDistance - yDistance);
+            return 14 * Math.Min(xDistance, yDistance) + 10 * remaining * b.GetCost();
         }
 
         static List<Tile> CalculatePath(Tile endSwitch)

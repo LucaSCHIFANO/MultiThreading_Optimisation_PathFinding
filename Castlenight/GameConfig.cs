@@ -6,7 +6,7 @@
         public const int MAP_DESTRUCTION_SPEED = 3;
         //AI action speed (movement, shoot). Increase to make things go faster
         //Default value should have been 10, but it's unplayable with initial version
-        public const int PLAYER_MOVE_SPEED = 1000;
+        public const int PLAYER_MOVE_SPEED = 100;
 
         //map size
         public int width = 30;

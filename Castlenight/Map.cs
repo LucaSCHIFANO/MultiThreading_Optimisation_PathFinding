@@ -311,7 +311,8 @@ namespace Castlenight
                 for (int j = 0; j < width; j++)
                 {
                     tiles[i][j].Data.parent = null;
-                    tiles[i][j].Data.currentCost = int.MaxValue;
+                    tiles[i][j].Data.GCost = int.MaxValue;
+                    tiles[i][j].Data.CalculateFCost();
                 }
             }
         }

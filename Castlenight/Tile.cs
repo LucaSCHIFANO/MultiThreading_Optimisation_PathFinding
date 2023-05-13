@@ -58,6 +58,13 @@ namespace Castlenight
     public class TilesData
     {
         public Tile parent = null;
-        public int currentCost = int.MaxValue - 1;
+        public int GCost = int.MaxValue - 1;
+        public int HCost = int.MaxValue - 1;
+        public int FCost = int.MaxValue - 1;
+
+        public void CalculateFCost()
+        {
+            FCost = GCost + HCost;
+        }
     }
 }

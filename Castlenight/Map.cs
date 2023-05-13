@@ -68,6 +68,7 @@ namespace Castlenight
                 if (timeBeforeSelectTileTodestroy <= 0)
                 {
                     timeBeforeSelectTileTodestroy = 0;
+                    timeBeforeDestruction = gameConfig.weaponDropTimer;
                     Random random = new Random();
                     for (int i = 0; i < gameConfig.destoyedTilesCount; ++i)
                         tilesToBeDestroyed.Add(new Vector2(random.Next(width), random.Next(height)));
@@ -96,13 +97,22 @@ namespace Castlenight
                                 --i;
                             }
                         }
-                        for (int i = 0; i < weapons.Count; ++i)
+                        try
                         {
-                            if (weapons[i].PosX == (int)element.X && weapons[i].PosY == (int)element.Y)
+                            CastleNightGame.Instance.Rwls.EnterWriteLock();
+
+                            for (int i = 0; i < weapons.Count; ++i)
                             {
-                                weapons.RemoveAt(i);
-                                --i;
+                                if (weapons[i].PosX == (int)element.X && weapons[i].PosY == (int)element.Y)
+                                {
+                                    weapons.RemoveAt(i);
+                                    --i;
+                                }
                             }
+                        }
+                        finally
+                        {
+                            CastleNightGame.Instance.Rwls.ExitWriteLock();
                         }
                     }
                 }
@@ -130,13 +140,12 @@ namespace Castlenight
                         {
                             x = random.Next(gameConfig.width);
                             y = random.Next(gameConfig.height);
-                        } while (!CastleNightGame.Instance.Map.CanMoveToCell(x, y));
+                        } while (!CastleNightGame.Instance.Map.CanMoveToCellExcludingFutureDestroyed(x, y));
 
 
                         WeaponBox weaponBox = new WeaponBox(x, y);
                             weapons.Add(weaponBox);
                     }
-                    timeBeforeDestruction = gameConfig.weaponDropTimer;
                     ResetPlayerCheck();
                 }
                 finally
@@ -262,7 +271,7 @@ namespace Castlenight
             }
             for (int i = 0; i < tilesToBeDestroyed.Count; ++i)
             {
-                if ((int)tilesToBeDestroyed[i].X == x && (int)tilesToBeDestroyed[i].Y == y)
+                if ((int)tilesToBeDestroyed[i].X == x && (int)tilesToBeDestroyed[i].Y == y /*&& timeBeforeDestruction < 1*/)
                 {
                     return false;
                 }

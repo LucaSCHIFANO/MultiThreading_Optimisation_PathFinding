@@ -99,16 +99,16 @@ namespace Castlenight
             List<Tile> list = new List<Tile>();
             Vector2 tilePosition = tile.GetPosition();
 
-            if (tilePosition.X > 0 && map.CanMoveToCell((int)tilePosition.X - 1, (int)tilePosition.Y))
+            if (tilePosition.X > 0 && map.CanMoveToCellExcludingFutureDestroyed((int)tilePosition.X - 1, (int)tilePosition.Y))
                 list.Add(map.GetTile((int)tilePosition.X - 1, (int)tilePosition.Y));
 
-            if (tilePosition.X < map.Width - 1 && map.CanMoveToCell((int)tilePosition.X + 1, (int)tilePosition.Y))
+            if (tilePosition.X < map.Width - 1 && map.CanMoveToCellExcludingFutureDestroyed((int)tilePosition.X + 1, (int)tilePosition.Y))
                 list.Add(map.GetTile((int)tilePosition.X + 1, (int)tilePosition.Y));
 
-            if (tilePosition.Y > 0 && map.CanMoveToCell((int)tilePosition.X, (int)tilePosition.Y - 1))
+            if (tilePosition.Y > 0 && map.CanMoveToCellExcludingFutureDestroyed((int)tilePosition.X, (int)tilePosition.Y - 1))
                 list.Add(map.GetTile((int)tilePosition.X, (int)tilePosition.Y - 1));
 
-            if (tilePosition.Y < map.Height - 1 && map.CanMoveToCell((int)tilePosition.X, (int)tilePosition.Y + 1))
+            if (tilePosition.Y < map.Height - 1 && map.CanMoveToCellExcludingFutureDestroyed((int)tilePosition.X, (int)tilePosition.Y + 1))
                 list.Add(map.GetTile((int)tilePosition.X, (int)tilePosition.Y + 1));
 
             return list;

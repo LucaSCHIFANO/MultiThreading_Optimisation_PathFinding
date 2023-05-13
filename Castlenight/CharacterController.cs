@@ -59,7 +59,7 @@ namespace Castlenight
                 character.NeedRecheck = false;
                 GetNextTile(character);
             }
-            else if (!CastleNightGame.Instance.Map.CanMoveToCell((int)nextTile[nextTileId].GetPosition().X, (int)nextTile[nextTileId].GetPosition().Y)) GetNextTile(character);
+            else if (!CastleNightGame.Instance.Map.CanMoveToCellExcludingFutureDestroyed((int)nextTile[nextTileId].GetPosition().X, (int)nextTile[nextTileId].GetPosition().Y)) GetNextTile(character);
             else
             {
                 CastleNightGame.Instance.Map.MovePlayer(character, (int)nextTile[nextTileId].GetPosition().X, (int)nextTile[nextTileId].GetPosition().Y);
@@ -129,7 +129,7 @@ namespace Castlenight
                         Random random = new Random();
                         x = random.Next(CastleNightGame.Instance.Map.GameConfig.width);
                         y = random.Next(CastleNightGame.Instance.Map.GameConfig.height);
-                    } while (!CastleNightGame.Instance.Map.CanMoveToCell(x, y));
+                    } while (!CastleNightGame.Instance.Map.CanMoveToCellExcludingFutureDestroyed(x, y));
 
                     List<Tile> list = new List<Tile>();
                     list = Pathfinding.FindPath(new Vector2(character.PosX, character.PosY), new Vector2(x, y), CastleNightGame.Instance.Map);

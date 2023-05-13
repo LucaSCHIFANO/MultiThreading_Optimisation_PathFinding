@@ -11,9 +11,10 @@ namespace Castlenight
 {
     internal class Pathfinding
     {
-        public static List<Tile> FindPath(Vector2 _start, Vector2 _end, Map map)
+        public static List<Tile> FindPath(Vector2 _start, Vector2 _end, Map map, Character character)
         {
-            map.ResetTiles();
+            var id = character.Id;
+            map.ResetTiles(id);
             List<Vector2> travel = new List<Vector2>();
 
             Tile start = map.GetTile(_start);
@@ -22,17 +23,17 @@ namespace Castlenight
             List<Tile> openList = new List<Tile> { start };
             List<Tile> closeList = new List<Tile>();
 
-            start.Data.GCost = 0;
-            start.Data.HCost = CalculateDistance(start,end);
-            start.Data.CalculateFCost();
+            start.Data[id].GCost = 0;
+            start.Data[id].HCost = CalculateDistance(start,end);
+            start.Data[id].CalculateFCost();
 
 
             while (openList.Count > 0)
             {
-                Tile currentTile = GetLowerCost(ref openList);
+                Tile currentTile = GetLowerCost(ref openList, id);
                 if (currentTile == end)
                 {
-                    return CalculatePath(currentTile);
+                    return CalculatePath(currentTile, id);
                 }
 
                 openList.Remove(currentTile);
@@ -40,15 +41,15 @@ namespace Castlenight
 
                 foreach (Tile tile in GetNeighbors(currentTile, map))
                 {
-                    int tentativeCost = currentTile.Data.GCost + CalculateDistance(currentTile, tile);
-                    if (closeList.Contains(tile) && tentativeCost > tile.Data.GCost) continue;
+                    int tentativeCost = currentTile.Data[character.Id].GCost + CalculateDistance(currentTile, tile);
+                    if (closeList.Contains(tile) && tentativeCost > tile.Data[id].GCost) continue;
 
-                    else if(tentativeCost < tile.Data.GCost)
+                    else if(tentativeCost < tile.Data[id].GCost)
                     {
-                        tile.Data.parent = currentTile;
-                        tile.Data.GCost = tentativeCost;
-                        tile.Data.HCost = CalculateDistance(tile, end);
-                        tile.Data.CalculateFCost();
+                        tile.Data[id].parent = currentTile;
+                        tile.Data[id].GCost = tentativeCost;
+                        tile.Data[id].HCost = CalculateDistance(tile, end);
+                        tile.Data[id].CalculateFCost();
 
 
                         if (!openList.Contains(tile)) openList.Add(tile);
@@ -60,12 +61,12 @@ namespace Castlenight
             return null;
         }
 
-        static Tile GetLowerCost(ref List<Tile> list)
+        static Tile GetLowerCost(ref List<Tile> list, int id)
         {
             Tile lowerFCost = list[0];
             for (int i = 0; i < list.Count - 1; i++)
             {
-                if (list[i].Data.FCost < lowerFCost.Data.FCost) lowerFCost = list[i];
+                if (list[i].Data[id].FCost < lowerFCost.Data[id].FCost) lowerFCost = list[i];
             }
             return lowerFCost;
         }
@@ -78,16 +79,16 @@ namespace Castlenight
             return 14 * Math.Min(xDistance, yDistance) + 10 * remaining * b.GetCost();
         }
 
-        static List<Tile> CalculatePath(Tile endSwitch)
+        static List<Tile> CalculatePath(Tile endSwitch, int id)
         {
             List<Tile> list = new List<Tile>();
 
             Tile currentTile = endSwitch;
 
-            while (currentTile.Data.parent != null)
+            while (currentTile.Data[id].parent != null)
             {
                 list.Add(currentTile);
-                currentTile = currentTile.Data.parent;
+                currentTile = currentTile.Data[id].parent;
             }
 
             list.Reverse();

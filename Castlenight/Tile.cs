@@ -1,5 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Threading;
 
 namespace Castlenight
 {
@@ -9,19 +13,33 @@ namespace Castlenight
         int posX = 0;
         int posY = 0;
 
-        TilesData data;
-        public TilesData Data { get => data; set => data = value; }
+        List<TilesData> data;
+        public List<TilesData> Data { get => data; set => data = value; }
 
         public bool selected;
         Texture2D texture;
 
-        public Tile(string _name, int posX, int posY) 
+        bool isOccupied;
+        public bool IsOccupied { get => isOccupied; set => isOccupied = value; }
+
+        Mutex mutex;
+        public Mutex Mutex { get => mutex; }
+
+
+
+        public Tile(string _name, int posX, int posY, int size) 
         { 
             this.name = _name;
             this.posX = posX;
             this.posY = posY;
-            this.data = new TilesData();
+            this.data = new List<TilesData>();
             texture = CastleNightGame.Instance.Content.Load<Texture2D>(name);
+            mutex = new Mutex();
+
+            for (int i = 0; i < size; i++)
+            {
+                data.Add(new TilesData());
+            }
         }
 
 

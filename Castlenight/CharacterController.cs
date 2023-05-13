@@ -29,13 +29,13 @@ namespace Castlenight
             running = true;
 
 
-            Character.Mutex.WaitOne();
+            //Character.Mutex.WaitOne();
 
 
             if (character.Pv <= 0)
             {
                 running = false;
-                Character.Mutex.ReleaseMutex();
+                //Character.Mutex.ReleaseMutex();
                 return;
             }
 
@@ -48,7 +48,7 @@ namespace Castlenight
                 {
                     character.Score += character.weapon.Shoot(targets[random.Next(targets.Count)]);
                     running = false;
-                    Character.Mutex.ReleaseMutex();
+                    //Character.Mutex.ReleaseMutex();
                     return;
                 }
             }
@@ -63,7 +63,14 @@ namespace Castlenight
             else if (!character.Map.CanMoveToCellExcludingFutureDestroyed((int)nextTile[nextTileId].GetPosition().X, (int)nextTile[nextTileId].GetPosition().Y)) GetNextTile(character);
             else
             {
+                nextTile[nextTileId].Mutex.WaitOne();
+                Tile tile = character.Map.GetTile(character.PosX, character.PosY);
+                tile.Mutex.WaitOne();
+                tile.IsOccupied = false;
                 character.Map.MovePlayer(character, (int)nextTile[nextTileId].GetPosition().X, (int)nextTile[nextTileId].GetPosition().Y);
+                nextTile[nextTileId].IsOccupied = true;
+                tile.Mutex.ReleaseMutex();
+                nextTile[nextTileId].Mutex.ReleaseMutex();
                 nextTileId++;
                 if (nextTileId >= nextTile.Count) nextTile.Clear();
             }
@@ -71,7 +78,7 @@ namespace Castlenight
           
 
 
-            Character.Mutex.ReleaseMutex();
+            //Character.Mutex.ReleaseMutex();
             running = false;
 
         }
@@ -99,18 +106,18 @@ namespace Castlenight
 
                     for (int i = 0; i < count; i++)
                     {
-                        list[i] = Pathfinding.FindPath(new Vector2(character.PosX, character.PosY), new Vector2(provWeapon[i].PosX, provWeapon[i].PosY), character.Map);
+                        list[i] = Pathfinding.FindPath(new Vector2(character.PosX, character.PosY), new Vector2(provWeapon[i].PosX, provWeapon[i].PosY), character.Map, character);
 
                         if ((list[i] != null && list[i].Count != 0))
                         {
                             if (shortestId == -1)
                             {
-                                shortestValue = list[i][list[i].Count - 1].Data.GCost;
+                                shortestValue = list[i][list[i].Count - 1].Data[character.Id].GCost;
                                 shortestId = i;
                             }
-                            else if (shortestValue > list[i].Last().Data.GCost)
+                            else if (shortestValue > list[i].Last().Data[character.Id].GCost)
                             {
-                                shortestValue = list[i].Last().Data.GCost;
+                                shortestValue = list[i].Last().Data[character.Id].GCost;
                                 shortestId = i;
                             }
                         }
@@ -133,7 +140,7 @@ namespace Castlenight
                     } while (!character.Map.CanMoveToCellExcludingFutureDestroyed(x, y));
                         
                     List<Tile> list = new List<Tile>();
-                    list = Pathfinding.FindPath(new Vector2(character.PosX, character.PosY), new Vector2(x, y), character.Map);
+                    list = Pathfinding.FindPath(new Vector2(character.PosX, character.PosY), new Vector2(x, y), character.Map, character);
 
                     if ((list != null && list.Count != 0))
                     {

@@ -21,7 +21,8 @@ namespace Castlenight
         int score = 0;
         public int Score { get => score; set => score = value; }
 
-
+        int id;
+        public int Id { get => id;}
         public Weapon weapon { get; set; }
 
 
@@ -155,6 +156,11 @@ namespace Castlenight
 
 
 
+        }
+
+        public void SetId(int _id)
+        {
+            if(_id >= 0) id = _id;
         }
     }
 }

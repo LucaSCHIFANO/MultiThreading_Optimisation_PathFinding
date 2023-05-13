@@ -59,6 +59,7 @@ namespace Castlenight
                 } while (!map.CanMoveToCell(x, y));
 
                 Character character = new Character("character1", x, y);
+                character.SetId(i);
                 map.AddPlayer(character);
                 threadList.Add(character.Thread);
                 character.StartThread();

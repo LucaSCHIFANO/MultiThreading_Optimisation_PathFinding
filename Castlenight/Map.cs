@@ -22,6 +22,7 @@ namespace Castlenight
         public int Height { get => height; }
 
         private List<Character> players = new List<Character>();
+        public List<Character> Players { get => players; set => players = value; }
 
         private List<WeaponBox> weapons = new List<WeaponBox>();
         public List<WeaponBox> Weapons { get => weapons; }
@@ -30,7 +31,6 @@ namespace Castlenight
 
         GameConfig gameConfig;
         public GameConfig GameConfig { get => gameConfig; }
-
 
         ReaderWriterLockSlim rwls;
 
@@ -42,6 +42,8 @@ namespace Castlenight
             height = gameConfig.height;
             tiles = new Tile[height][];
             rwls = CastleNightGame.Instance.Rwls;
+
+            var _size = gameConfig.playerCount;
 
 
             Random random = new Random();
@@ -58,7 +60,7 @@ namespace Castlenight
                         kind = "dirt";
                     else
                         kind = "highgrass";
-                    tiles[i][j] = new Tile(kind, j, i);
+                    tiles[i][j] = new Tile(kind, j, i, _size);
                 }
             }
 
@@ -86,6 +88,7 @@ namespace Castlenight
             }
             else if (timeBeforeDestruction > 0)
             {
+                var _size = gameConfig.playerCount;
                 //destroy flagged tiles, killing players that are still on them
                 timeBeforeDestruction -= gameTime.ElapsedGameTime.TotalSeconds * GameConfig.MAP_DESTRUCTION_SPEED;
                 if (timeBeforeDestruction <= 0)
@@ -93,7 +96,7 @@ namespace Castlenight
                     timeBeforeDestruction = 0;
                     foreach (var element in tilesToBeDestroyed)
                     {
-                        tiles[(int)element.Y][(int)element.X] = new Tile("destroyed", (int)element.X, (int)element.Y);
+                        tiles[(int)element.Y][(int)element.X] = new Tile("destroyed", (int)element.X, (int)element.Y, _size);
                         for (int i = 0; i < players.Count; ++i)
                         {
                             if (players[i].PosY == (int)element.Y && players[i].PosX == (int)element.X)
@@ -253,28 +256,16 @@ namespace Castlenight
         public bool CanMoveToCell(int x, int y)
         {
             //check if player can move on given cell
-            for (int i = 0; i < players.Count; ++i)
-            {
-                if (players[i].PosY == y && players[i].PosX == x)
-                {
-                    return false;
-                }
-            }
-            if (tiles[y][x].GetCost() == int.MaxValue)
-                return false;
+            if (tiles[y][x].GetCost() == int.MaxValue) return false;
+            if (tiles[y][x].IsOccupied) return false;
             return true;
         }
 
         public bool CanMoveToCellExcludingFutureDestroyed(int x, int y)
         {
             //check if player can move on given cell. Consider invalid cells that will be destroyed soon
-            for (int i = 0; i < players.Count; ++i)
-            {
-                if (players[i].PosY == y && players[i].PosX == x)
-                {
-                    return false;
-                }
-            }
+            if (tiles[y][x].GetCost() == int.MaxValue)return false;
+            if (GetTile(x, y).IsOccupied) return false;
             for (int i = 0; i < tilesToBeDestroyed.Count; ++i)
             {
                 if ((int)tilesToBeDestroyed[i].X == x && (int)tilesToBeDestroyed[i].Y == y && timeBeforeDestruction < 0.5 * GameConfig.MAP_DESTRUCTION_SPEED)
@@ -282,8 +273,6 @@ namespace Castlenight
                     return false;
                 }
             }
-            if (tiles[y][x].GetCost() == int.MaxValue)
-                return false;
             return true;
         }
 
@@ -319,15 +308,15 @@ namespace Castlenight
             return Tiles[(int)xy.Y][(int)xy.X];
         }
 
-        public void ResetTiles()
+        public void ResetTiles(int id)
         {
             for (int i = 0; i < height; i++)
             {
                 for (int j = 0; j < width; j++)
                 {
-                    tiles[i][j].Data.parent = null;
-                    tiles[i][j].Data.GCost = int.MaxValue;
-                    tiles[i][j].Data.CalculateFCost();
+                    tiles[i][j].Data[id].parent = null;
+                    tiles[i][j].Data[id].GCost = int.MaxValue;
+                    tiles[i][j].Data[id].CalculateFCost();
                 }
             }
         }

@@ -271,7 +271,7 @@ namespace Castlenight
             }
             for (int i = 0; i < tilesToBeDestroyed.Count; ++i)
             {
-                if ((int)tilesToBeDestroyed[i].X == x && (int)tilesToBeDestroyed[i].Y == y /*&& timeBeforeDestruction < 1*/)
+                if ((int)tilesToBeDestroyed[i].X == x && (int)tilesToBeDestroyed[i].Y == y && timeBeforeDestruction < 0.5 * GameConfig.MAP_DESTRUCTION_SPEED)
                 {
                     return false;
                 }

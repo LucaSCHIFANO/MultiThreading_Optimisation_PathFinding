@@ -39,6 +39,11 @@ namespace Castlenight
         bool needRecheck;
         public bool NeedRecheck { get => needRecheck; set => needRecheck = value; }
 
+        Map map;
+        public Map Map { get => map; }
+
+        Texture2D texture;
+
         public Character(string _name, int posX, int posY)
         {
             this.name = _name;
@@ -54,6 +59,9 @@ namespace Castlenight
             ParameterizedThreadStart parameterizedThreadStart = new ParameterizedThreadStart(UpdateCharacter);
             thread = new Thread(UpdateCharacter);
             thread.IsBackground = true;
+
+            texture = CastleNightGame.Instance.Content.Load<Texture2D>(name);
+            map = CastleNightGame.Instance.Map; 
         }
 
         public void StartThread()
@@ -69,10 +77,8 @@ namespace Castlenight
 
         public void Draw(GraphicsDeviceManager graphics, GameTime gameTime)
         {
-            Texture2D texture;
             var spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
 
-            texture = CastleNightGame.Instance.Content.Load<Texture2D>(name);
             spriteBatch.Begin();
             spriteBatch.Draw(texture, new Rectangle(posX * GameConfig.tileSize, posY * GameConfig.tileSize, GameConfig.tileSize, GameConfig.tileSize), Color.White);
             spriteBatch.End();
@@ -80,7 +86,7 @@ namespace Castlenight
 
         public void SetPosition(int posX, int posY)
         {
-            if (!CastleNightGame.Instance.Map.CanMoveToCell(posX, posY))
+            if (!map.CanMoveToCell(posX, posY))
             {
                 throw new Exception("Moving a character on an invalid space");
             }
@@ -101,7 +107,7 @@ namespace Castlenight
                 {
                     Debug.WriteLine("Player killed");
                     score += 50;
-                    CastleNightGame.Instance.Map.RemovePlayer(this);
+                    map.RemovePlayer(this);
                 }
             }
 

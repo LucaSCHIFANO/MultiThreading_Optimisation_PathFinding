@@ -31,6 +31,9 @@ namespace Castlenight
         GameConfig gameConfig;
         public GameConfig GameConfig { get => gameConfig; }
 
+
+        ReaderWriterLockSlim rwls;
+
         public Map(GameConfig gameConfig)
         {
             //generate a random map
@@ -38,6 +41,9 @@ namespace Castlenight
             width = gameConfig.width;
             height = gameConfig.height;
             tiles = new Tile[height][];
+            rwls = CastleNightGame.Instance.Rwls;
+
+
             Random random = new Random();
             for (int i = 0; i < height; ++i)
             {
@@ -55,6 +61,7 @@ namespace Castlenight
                     tiles[i][j] = new Tile(kind, j, i);
                 }
             }
+
         }
 
         public void Update(GameTime gameTime)
@@ -99,7 +106,7 @@ namespace Castlenight
                         }
                         try
                         {
-                            CastleNightGame.Instance.Rwls.EnterWriteLock();
+                            rwls.EnterWriteLock();
 
                             for (int i = 0; i < weapons.Count; ++i)
                             {
@@ -112,7 +119,7 @@ namespace Castlenight
                         }
                         finally
                         {
-                            CastleNightGame.Instance.Rwls.ExitWriteLock();
+                            rwls.ExitWriteLock();
                         }
                     }
                 }
@@ -129,9 +136,9 @@ namespace Castlenight
             {
                 try
                 {
-                    CastleNightGame.Instance.Rwls.EnterWriteLock();
+                    rwls.EnterWriteLock();
 
-                    timeBeforeWeaponDrop = 10;
+                    timeBeforeWeaponDrop = gameConfig.weaponDropTimer;
                     Random random = new Random();
                     for (int i = 0; i < gameConfig.crateDropCount; ++i)
                     {
@@ -140,7 +147,7 @@ namespace Castlenight
                         {
                             x = random.Next(gameConfig.width);
                             y = random.Next(gameConfig.height);
-                        } while (!CastleNightGame.Instance.Map.CanMoveToCellExcludingFutureDestroyed(x, y));
+                        } while (!CanMoveToCellExcludingFutureDestroyed(x, y));
 
 
                         WeaponBox weaponBox = new WeaponBox(x, y);
@@ -150,7 +157,7 @@ namespace Castlenight
                 }
                 finally
                 {
-                    CastleNightGame.Instance.Rwls.ExitWriteLock();
+                    rwls.ExitWriteLock();
                 }
             }
         }
@@ -212,7 +219,7 @@ namespace Castlenight
                         try
                         {
 
-                        CastleNightGame.Instance.Rwls.EnterWriteLock();
+                        rwls.EnterWriteLock();
                         for (int j = 0; j < weapons.Count; ++j)
                         {
                             if (weapons[j].PosX == x && weapons[j].PosY == y)
@@ -224,7 +231,7 @@ namespace Castlenight
                         }
                         finally
                         {
-                            CastleNightGame.Instance.Rwls.ExitWriteLock();
+                            rwls.ExitWriteLock();
                         }
                         if (!immediate)
                             Thread.Sleep(tiles[y][x].GetCost() * 1000 / GameConfig.PLAYER_MOVE_SPEED);

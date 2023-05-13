@@ -16,8 +16,8 @@ namespace Castlenight
             map.ResetTiles();
             List<Vector2> travel = new List<Vector2>();
 
-            Tile start = CastleNightGame.Instance.Map.GetTile(_start);
-            Tile end = CastleNightGame.Instance.Map.GetTile(_end);
+            Tile start = map.GetTile(_start);
+            Tile end = map.GetTile(_end);
 
             List<Tile> openList = new List<Tile> { start };
             List<Tile> closeList = new List<Tile>();

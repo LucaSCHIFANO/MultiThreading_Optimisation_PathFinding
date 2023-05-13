@@ -13,6 +13,7 @@ namespace Castlenight
         public TilesData Data { get => data; set => data = value; }
 
         public bool selected;
+        Texture2D texture;
 
         public Tile(string _name, int posX, int posY) 
         { 
@@ -20,15 +21,14 @@ namespace Castlenight
             this.posX = posX;
             this.posY = posY;
             this.data = new TilesData();
+            texture = CastleNightGame.Instance.Content.Load<Texture2D>(name);
         }
 
 
         public void Draw(GraphicsDeviceManager graphics, GameTime gameTime)
         {
-            Texture2D texture;
             var spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
 
-            texture = CastleNightGame.Instance.Content.Load<Texture2D>(name);
             spriteBatch.Begin();
             if(selected)spriteBatch.Draw(texture, new Rectangle(posX* GameConfig.tileSize, posY* GameConfig.tileSize, GameConfig.tileSize, GameConfig.tileSize), Color.Red);
             else spriteBatch.Draw(texture, new Rectangle(posX * GameConfig.tileSize, posY * GameConfig.tileSize, GameConfig.tileSize, GameConfig.tileSize), Color.White);

@@ -20,6 +20,7 @@ namespace Castlenight
         List<Tile> nextTile = new List<Tile>();
         int nextTileId = 0;
 
+
         public void ComputeAndExecuteAction(Character character)
         {
             //Random action controller: will do something random (but valid) on each tick
@@ -42,7 +43,7 @@ namespace Castlenight
 
             if (character.weapon != null && character.weapon.Ammo > 0)
             {
-                var targets = CastleNightGame.Instance.Map.GetCharactersInRange(character, character.weapon.Range);
+                var targets = character.Map.GetCharactersInRange(character, character.weapon.Range);
                 if (targets.Count > 0 && random.Next(100) < 25)
                 {
                     character.Score += character.weapon.Shoot(targets[random.Next(targets.Count)]);
@@ -59,10 +60,10 @@ namespace Castlenight
                 character.NeedRecheck = false;
                 GetNextTile(character);
             }
-            else if (!CastleNightGame.Instance.Map.CanMoveToCellExcludingFutureDestroyed((int)nextTile[nextTileId].GetPosition().X, (int)nextTile[nextTileId].GetPosition().Y)) GetNextTile(character);
+            else if (!character.Map.CanMoveToCellExcludingFutureDestroyed((int)nextTile[nextTileId].GetPosition().X, (int)nextTile[nextTileId].GetPosition().Y)) GetNextTile(character);
             else
             {
-                CastleNightGame.Instance.Map.MovePlayer(character, (int)nextTile[nextTileId].GetPosition().X, (int)nextTile[nextTileId].GetPosition().Y);
+                character.Map.MovePlayer(character, (int)nextTile[nextTileId].GetPosition().X, (int)nextTile[nextTileId].GetPosition().Y);
                 nextTileId++;
                 if (nextTileId >= nextTile.Count) nextTile.Clear();
             }
@@ -85,8 +86,8 @@ namespace Castlenight
             {
                 CastleNightGame.Instance.Rwls.EnterReadLock();
 
-                int count = CastleNightGame.Instance.Map.Weapons.Count;
-                List<WeaponBox> provWeapon = CastleNightGame.Instance.Map.Weapons;
+                int count = character.Map.Weapons.Count;
+                List<WeaponBox> provWeapon = character.Map.Weapons;
 
 
                 if (count > 0)
@@ -98,7 +99,7 @@ namespace Castlenight
 
                     for (int i = 0; i < count; i++)
                     {
-                        list[i] = Pathfinding.FindPath(new Vector2(character.PosX, character.PosY), new Vector2(provWeapon[i].PosX, provWeapon[i].PosY), CastleNightGame.Instance.Map);
+                        list[i] = Pathfinding.FindPath(new Vector2(character.PosX, character.PosY), new Vector2(provWeapon[i].PosX, provWeapon[i].PosY), character.Map);
 
                         if ((list[i] != null && list[i].Count != 0))
                         {
@@ -127,12 +128,12 @@ namespace Castlenight
                     do
                     {
                         Random random = new Random();
-                        x = random.Next(CastleNightGame.Instance.Map.GameConfig.width);
-                        y = random.Next(CastleNightGame.Instance.Map.GameConfig.height);
-                    } while (!CastleNightGame.Instance.Map.CanMoveToCellExcludingFutureDestroyed(x, y));
-
+                        x = random.Next(character.Map.GameConfig.width);
+                        y = random.Next(character.Map.GameConfig.height);
+                    } while (!character.Map.CanMoveToCellExcludingFutureDestroyed(x, y));
+                        
                     List<Tile> list = new List<Tile>();
-                    list = Pathfinding.FindPath(new Vector2(character.PosX, character.PosY), new Vector2(x, y), CastleNightGame.Instance.Map);
+                    list = Pathfinding.FindPath(new Vector2(character.PosX, character.PosY), new Vector2(x, y), character.Map);
 
                     if ((list != null && list.Count != 0))
                     {

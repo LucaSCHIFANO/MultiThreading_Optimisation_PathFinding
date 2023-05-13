@@ -14,20 +14,21 @@ namespace Castlenight
 
         public Weapon weapon { get; private set; }
 
+        Texture2D texture;
+
         public WeaponBox(int x, int y)
         {
             posX = x;
             posY = y;
             Random random = new Random();
             weapon = new Weapon(5 + random.Next(10), 1 + random.Next(5), 5 + random.Next(15));
+            texture = CastleNightGame.Instance.Content.Load<Texture2D>("crate");
         }
 
         public void Draw(GraphicsDeviceManager graphics, GameTime gameTime)
         {
-            Texture2D texture;
             var spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
 
-            texture = CastleNightGame.Instance.Content.Load<Texture2D>("crate");
             spriteBatch.Begin();
             spriteBatch.Draw(texture, new Rectangle(posX * GameConfig.tileSize, posY * GameConfig.tileSize , GameConfig.tileSize, GameConfig.tileSize), Color.White);
             spriteBatch.End();

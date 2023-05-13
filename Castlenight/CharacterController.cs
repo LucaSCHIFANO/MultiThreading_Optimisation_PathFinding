@@ -15,9 +15,11 @@ namespace Castlenight
     public class RandomCharacterController : ICharacterController
     {
         bool running = false;
+        
+        //Target weapon
         List<Tile> nextTile = new List<Tile>();
         int nextTileId = 0;
-
+        Tile currentTarget = null;
         public void ComputeAndExecuteAction(Character character)
         {
             //Random action controller: will do something random (but valid) on each tick
@@ -52,7 +54,7 @@ namespace Castlenight
 
             //pathfinding
 
-            if (nextTile.Count == 0) GetNextTile(character);
+            if (nextTile == null || nextTile.Count == 0 || currentTarget == null) GetNextTile(character);
             else if (!CastleNightGame.Instance.Map.CanMoveToCell((int)nextTile[nextTileId].GetPosition().X, (int)nextTile[nextTileId].GetPosition().Y)) GetNextTile(character);
             else
             {
@@ -120,16 +122,20 @@ namespace Castlenight
                     for (int i = 0; i < count; i++)
                     {
                         list[i] = Pathfinding.FindPath(new Vector2(character.PosX, character.PosY), new Vector2(provWeapon[i].PosX, provWeapon[i].PosY), CastleNightGame.Instance.Map);
-                        if (list[shortestId][list[shortestId].Count - 1].Data.currentCost > list[i][list[i].Count - 1].Data.currentCost)
+                        if (list[i] != null && list[i].Count != 0 && list[shortestId].Last().Data.currentCost > list[i].Last().Data.currentCost) //
                         {
                             shortestValue = list[i][list[i].Count - 1].Data.currentCost;
                             shortestId = i;
                         }
                     }
 
-                    nextTile.Clear();
-                    nextTile = list[shortestId];
-                    nextTileId = 0;
+                    if (list[shortestId] != null)
+                    {
+                        nextTile.Clear();
+                        nextTile = list[shortestId];
+                        nextTileId = 0;
+                        currentTarget = list[shortestId].Last();
+                    }
                 }
             }
             finally

@@ -50,7 +50,7 @@ namespace Castlenight
 
         public Vector2 GetPosition()
         {
-            return new Vector2(posY, posX);
+            return new Vector2(posX, posY);
         }
     }
 

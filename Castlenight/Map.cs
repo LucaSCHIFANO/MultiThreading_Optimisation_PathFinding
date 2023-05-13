@@ -119,6 +119,7 @@ namespace Castlenight
                 try
                 {
                     CastleNightGame.Instance.Rwls.EnterWriteLock();
+
                     timeBeforeWeaponDrop = 10;
                     Random random = new Random();
                     for (int i = 0; i < gameConfig.crateDropCount; ++i)
@@ -129,6 +130,7 @@ namespace Castlenight
                             x = random.Next(gameConfig.width);
                             y = random.Next(gameConfig.height);
                         } while (!CastleNightGame.Instance.Map.CanMoveToCell(x, y));
+
 
                         WeaponBox weaponBox = new WeaponBox(x, y);
                             weapons.Add(weaponBox);
@@ -195,6 +197,10 @@ namespace Castlenight
                     if (CanMoveToCell(x, y))
                     {
                         players[i].SetPosition(x, y);
+
+                        try
+                        {
+
                         CastleNightGame.Instance.Rwls.EnterWriteLock();
                         for (int j = 0; j < weapons.Count; ++j)
                         {
@@ -204,7 +210,11 @@ namespace Castlenight
                                 weapons.RemoveAt(j);
                             }
                         }
-                        CastleNightGame.Instance.Rwls.ExitWriteLock();
+                        }
+                        finally
+                        {
+                            CastleNightGame.Instance.Rwls.ExitWriteLock();
+                        }
                         if (!immediate)
                             Thread.Sleep(tiles[y][x].GetCost() * 1000 / GameConfig.PLAYER_MOVE_SPEED);
                     }
@@ -284,19 +294,19 @@ namespace Castlenight
 
         public Tile GetTile(int x, int y)
         {
-            return Tiles[x][y];
+            return Tiles[y][x];
         }
 
         public Tile GetTile(Vector2 xy)
         {
-            return Tiles[(int)xy.X][(int)xy.Y];
+            return Tiles[(int)xy.Y][(int)xy.X];
         }
 
         public void ResetTiles()
         {
-            for (int i = 0; i < width; i++)
+            for (int i = 0; i < height; i++)
             {
-                for (int j = 0; j < height; j++)
+                for (int j = 0; j < width; j++)
                 {
                     tiles[i][j].Data.parent = null;
                     tiles[i][j].Data.currentCost = int.MaxValue;

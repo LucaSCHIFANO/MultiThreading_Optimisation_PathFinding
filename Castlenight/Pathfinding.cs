@@ -37,10 +37,10 @@ namespace Castlenight
 
                 foreach (Tile tile in GetNeighbors(currentTile, map))
                 {
-                    if (closeList.Contains(tile)) continue;
-
                     int tentativeCost = currentTile.Data.currentCost + tile.GetCost();
-                    if(tentativeCost < tile.Data.currentCost)
+                    if (closeList.Contains(tile) && tentativeCost > tile.Data.currentCost) continue;
+
+                    else if(tentativeCost < tile.Data.currentCost)
                     {
                         tile.Data.parent = currentTile;
                         tile.Data.currentCost = tentativeCost;
@@ -85,16 +85,16 @@ namespace Castlenight
             List<Tile> list = new List<Tile>();
             Vector2 tilePosition = tile.GetPosition();
 
-            if (tile.GetPosition().X > 0 && map.CanMoveToCell((int)tilePosition.X - 1, (int)tilePosition.Y))
+            if (tilePosition.X > 0 && map.CanMoveToCell((int)tilePosition.X - 1, (int)tilePosition.Y))
                 list.Add(map.GetTile((int)tilePosition.X - 1, (int)tilePosition.Y));
 
-            if (tile.GetPosition().X < map.Width - 1 && map.CanMoveToCell((int)tilePosition.X + 1, (int)tilePosition.Y))
+            if (tilePosition.X < map.Width - 1 && map.CanMoveToCell((int)tilePosition.X + 1, (int)tilePosition.Y))
                 list.Add(map.GetTile((int)tilePosition.X + 1, (int)tilePosition.Y));
 
-            if (tile.GetPosition().Y > 0 && map.CanMoveToCell((int)tilePosition.X, (int)tilePosition.Y - 1))
+            if (tilePosition.Y > 0 && map.CanMoveToCell((int)tilePosition.X, (int)tilePosition.Y - 1))
                 list.Add(map.GetTile((int)tilePosition.X, (int)tilePosition.Y - 1));
 
-            if (tile.GetPosition().Y < map.Height - 1 && map.CanMoveToCell((int)tilePosition.X, (int)tilePosition.Y + 1))
+            if (tilePosition.Y < map.Height - 1 && map.CanMoveToCell((int)tilePosition.X, (int)tilePosition.Y + 1))
                 list.Add(map.GetTile((int)tilePosition.X, (int)tilePosition.Y + 1));
 
             return list;

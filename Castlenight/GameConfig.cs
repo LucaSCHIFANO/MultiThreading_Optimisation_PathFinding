@@ -13,7 +13,7 @@
         public int height = 21;
         public const int tileSize = 30;
         //player count
-        public  int playerCount = 1;
+        public  int playerCount = 10;
         //how many weapons are dropped each time
         public  int crateDropCount = 5;
         //how many tiles are destryed each time

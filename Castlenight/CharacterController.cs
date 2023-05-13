@@ -109,12 +109,12 @@ namespace Castlenight
             {
                 CastleNightGame.Instance.Rwls.EnterReadLock();
 
-                int count = CastleNightGame.Instance.Map.Weapons.Count - 1;
+                int count = CastleNightGame.Instance.Map.Weapons.Count;
                 List<WeaponBox> provWeapon = CastleNightGame.Instance.Map.Weapons;
 
                 if (count > 0)
                 {
-                    int shortestId = 0;
+                    int shortestId = -1;
                     int shortestValue = int.MaxValue;
 
                     List<Tile>[] list = new List<Tile>[count];
@@ -122,14 +122,31 @@ namespace Castlenight
                     for (int i = 0; i < count; i++)
                     {
                         list[i] = Pathfinding.FindPath(new Vector2(character.PosX, character.PosY), new Vector2(provWeapon[i].PosX, provWeapon[i].PosY), CastleNightGame.Instance.Map);
-                        if (list[i] != null && list[i].Count != 0 && list[shortestId].Last().Data.currentCost > list[i].Last().Data.currentCost) //
+
+                        if ((list[i] != null && list[i].Count != 0))
+                        {
+                            if(shortestId == -1)
+                            {
+                                shortestValue = list[i][list[i].Count - 1].Data.currentCost;
+                                shortestId = i;
+                            }
+                            else if(list[shortestId].Last().Data.currentCost > list[i].Last().Data.currentCost)
+                            {
+                                shortestValue = list[i][list[i].Count - 1].Data.currentCost;
+                                shortestId = i;
+                            }
+                        }
+
+                        
+                        /*if((list[i] != null && list[i].Count != 0)
+                            && list[shortestId].Last().Data.currentCost > list[i].Last().Data.currentCost)
                         {
                             shortestValue = list[i][list[i].Count - 1].Data.currentCost;
                             shortestId = i;
-                        }
+                        }*/
                     }
 
-                    if (list[shortestId] != null)
+                    if (shortestId != -1 && list[shortestId] != null)
                     {
                         nextTile.Clear();
                         nextTile = list[shortestId];

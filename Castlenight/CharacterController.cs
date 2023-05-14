@@ -51,7 +51,7 @@ namespace Castlenight
 
             //pathfinding
 
-            if (nextTile == null || nextTile.Count == 0 || character.NeedRecheck)
+            if (nextTile == null || nextTile.Count == 0 || (character.NeedRecheck && GameConfig.needRecalcule))
             {
                 character.NeedRecheck = false;
                 GetNextTile(character);
@@ -120,16 +120,20 @@ namespace Castlenight
                     }
                 } else
                 {
-                    int x, y;
-                    do
-                    {
-                        Random random = new Random();
-                        x = random.Next(character.Map.GameConfig.width);
-                        y = random.Next(character.Map.GameConfig.height);
-                    } while (!character.Map.CanMoveToCellExcludingFutureDestroyed(x, y));
-                        
-                    List<Tile> list = new List<Tile>();
-                    list = Pathfinding.FindPath(new Vector2(character.PosX, character.PosY), new Vector2(x, y), character.Map, character);
+                        List<Tile> list = new List<Tile>();
+                    int id = 0;
+
+                        int x, y;
+                        do
+                        {
+                            Random random = new Random();
+                            x = random.Next(character.Map.GameConfig.width);
+                            y = random.Next(character.Map.GameConfig.height);
+                        id++;
+                        } while (!character.Map.CanMoveToCellExcludingFutureDestroyed(x, y) || id < GameConfig.numberOfTryPlayerMove);
+
+                        list.Clear();
+                        list = Pathfinding.FindPath(new Vector2(character.PosX, character.PosY), new Vector2(x, y), character.Map, character);
 
                     if ((list != null && list.Count != 0))
                     {

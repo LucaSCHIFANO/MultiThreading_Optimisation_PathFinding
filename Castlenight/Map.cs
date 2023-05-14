@@ -150,15 +150,19 @@ namespace Castlenight
                     for (int i = 0; i < gameConfig.crateDropCount; ++i)
                     {
                         int x, y;
+                        int id = 0;
                         do
                         {
                             x = random.Next(gameConfig.width);
                             y = random.Next(gameConfig.height);
-                        } while (!CanMoveToCellExcludingFutureDestroyed(x, y));
+                            id++;
+                        } while (!CanMoveToCellExcludingFutureDestroyed(x, y) || id <= GameConfig.numberOfTryWeaponDrop);
 
-
-                        WeaponBox weaponBox = new WeaponBox(x, y);
+                        if (CanMoveToCellExcludingFutureDestroyed(x, y))
+                        {
+                            WeaponBox weaponBox = new WeaponBox(x, y);
                             weapons.Add(weaponBox);
+                        }
                     }
                     ResetPlayerCheck();
                 }

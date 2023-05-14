@@ -13,16 +13,19 @@
         public int height = 25;
         public const int tileSize = 30;
         //player count
-        public  int playerCount = 30;
+        public int playerCount = 30;
+        public const int numberOfTryPlayerMove = 5;
         //how many weapons are dropped each time
-        public  int crateDropCount = 5;
+        public int crateDropCount = 5;
+        public const int numberOfTryWeaponDrop = 15;
+        public const bool needRecalcule = false;        
         //how many tiles are destryed each time
-        public  int destoyedTilesCount = 10;
+        public int destoyedTilesCount = 10;
 
 
         //timers for map destruction & weapon drop
-        public  int weaponDropTimer = 7;
-        public  int triggerTileDestructionTimer = 10;
-        public  int executeTileDestructionTimer = 5;
+        public int weaponDropTimer = 7;
+        public int triggerTileDestructionTimer = 10;
+        public int executeTileDestructionTimer = 5;
     }
 }

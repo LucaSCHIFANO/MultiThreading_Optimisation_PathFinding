@@ -276,6 +276,17 @@ namespace Castlenight
             return true;
         }
 
+        public bool CheckBeforeMove(int x, int y)
+        {
+            GetTile(x, y).Mutex.WaitOne();
+            if (CanMoveToCellExcludingFutureDestroyed(x, y)) return true;
+            else
+            {
+                GetTile(x, y).Mutex.ReleaseMutex();
+                return false;
+            }
+        }
+
 
         public List<Character> GetCharactersInRange(Character origin, int radius)
         {

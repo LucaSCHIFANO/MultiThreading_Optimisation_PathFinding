@@ -60,12 +60,12 @@ namespace Castlenight
                 character.NeedRecheck = false;
                 GetNextTile(character);
             }
-            else if (!character.Map.CanMoveToCellExcludingFutureDestroyed((int)nextTile[nextTileId].GetPosition().X, (int)nextTile[nextTileId].GetPosition().Y)) GetNextTile(character);
+            else if (!character.Map.CheckBeforeMove((int)nextTile[nextTileId].GetPosition().X, (int)nextTile[nextTileId].GetPosition().Y)) GetNextTile(character);
             else
             {
-                nextTile[nextTileId].Mutex.WaitOne();
                 Tile tile = character.Map.GetTile(character.PosX, character.PosY);
                 tile.Mutex.WaitOne();
+
                 tile.IsOccupied = false;
                 character.Map.MovePlayer(character, (int)nextTile[nextTileId].GetPosition().X, (int)nextTile[nextTileId].GetPosition().Y);
                 nextTile[nextTileId].IsOccupied = true;

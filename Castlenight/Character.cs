@@ -37,11 +37,17 @@ namespace Castlenight
         bool needRecheck;
         public bool NeedRecheck { get => needRecheck; set => needRecheck = value; }
 
+        int shootProba;
+        public int ShootProba { get => shootProba; }
+
 
         Map map;
         public Map Map { get => map; }
 
         Texture2D texture;
+
+        ReaderWriterLockSlim rwlsPV;
+        public ReaderWriterLockSlim RwlsPV { get => rwlsPV; }
 
         public Character(string _name, int posX, int posY)
         {
@@ -52,6 +58,9 @@ namespace Castlenight
 
             controller = new RandomCharacterController();
             weapon = new Weapon(5, 1, 2);
+
+            rwlsPV= new ReaderWriterLockSlim();
+            shootProba = GameConfig.shootProba;
             
             ParameterizedThreadStart parameterizedThreadStart = new ParameterizedThreadStart(UpdateCharacter);
             thread = new Thread(UpdateCharacter);
@@ -94,29 +103,31 @@ namespace Castlenight
         //returns a score based on damage & kill
         public int TakeDamage(int damage)
         {
-            int score = damage;
-            if (pv < 0)
-                score = -10;
+            rwlsPV.EnterWriteLock();
+            int _score = damage;
+            if (pv < 0) _score = -10;
             else
             {
                 pv -= damage;
                 if (pv < 0)
                 {
                     Debug.WriteLine("Player killed");
-                    score += 50;
+                    _score += 50;
                     map.RemovePlayer(this);
                 }
             }
-
-            return score;
+            rwlsPV.ExitWriteLock();
+            return _score;
         }
 
-        //Kill the unit immediately, used when unit is on a desptroyed tile
+        //Kill the unit immediately, used when unit is on a destroyed tile
         public void Kill()
         {
+            rwlsPV.EnterWriteLock();
             pv = 0;
             score -= 1000;
             Debug.WriteLine("Player dead by falling in a hole");
+            rwlsPV.ExitWriteLock();
         }
 
         void UpdateCharacter(Object obj)

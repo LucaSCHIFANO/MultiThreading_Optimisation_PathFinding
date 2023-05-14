@@ -13,13 +13,14 @@
         public const int WINDOW_HEIGHT = 720;
 
         //map size
-        public int width = 30;
-        public int height = 25;
+        public int width = 10;
+        public int height = 10;
         public const int tileSize = 30;
 
-        //player count + how many times they'll try to move when no weapon
+        //player count + how many times they'll try to move when no weapon + probability to shoot
         public int playerCount = 30;
         public const int numberOfTryPlayerMove = 5;
+        public const int shootProba = 25;
 
         //how many weapons are dropped each time and if the pathfinding of player has to be recalculed
         public int crateDropCount = 5;
@@ -27,7 +28,7 @@
         public const bool needRecalcule = false;     
         
         //how many tiles are destryed each time
-        public int destoyedTilesCount = 10;
+        public int destoyedTilesCount = 50;
 
 
         //timers for map destruction & weapon drop

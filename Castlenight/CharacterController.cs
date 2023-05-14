@@ -28,20 +28,22 @@ namespace Castlenight
             running = true;
 
 
-
+            character.RwlsPV.EnterReadLock();
 
             if (character.Pv <= 0)
             {
                 running = false;
+                character.RwlsPV.ExitReadLock();
                 return;
             }
+            character.RwlsPV.ExitReadLock();
 
             Random random = new Random();
 
             if (character.weapon != null && character.weapon.Ammo > 0)
             {
                 var targets = character.Map.GetCharactersInRange(character, character.weapon.Range);
-                if (targets.Count > 0 && random.Next(100) < 25)
+                if (targets.Count > 0 && random.Next(100) < character.ShootProba)
                 {
                     character.Score += character.weapon.Shoot(targets[random.Next(targets.Count)]);
                     running = false;
@@ -50,13 +52,15 @@ namespace Castlenight
             }
 
             //pathfinding
+            character.RwlsPV.EnterReadLock();
 
             if (nextTile == null || nextTile.Count == 0 || (character.NeedRecheck && GameConfig.needRecalcule))
             {
                 character.NeedRecheck = false;
                 GetNextTile(character);
             }
-            else if (!character.Map.CheckBeforeMove((int)nextTile[nextTileId].GetPosition().X, (int)nextTile[nextTileId].GetPosition().Y)) GetNextTile(character);
+            else if (!character.Map.CheckBeforeMove((int)nextTile[nextTileId].GetPosition().X, (int)nextTile[nextTileId].GetPosition().Y)) 
+                GetNextTile(character);
             else
             {
                 Tile tile = character.Map.GetTile(character.GetPosition());
@@ -65,15 +69,17 @@ namespace Castlenight
                 tile.IsOccupied = false;
                 character.Map.MovePlayer(character, (int)nextTile[nextTileId].GetPosition().X, (int)nextTile[nextTileId].GetPosition().Y);
                 nextTile[nextTileId].IsOccupied = true;
+                
                 tile.Mutex.ReleaseMutex();
                 nextTile[nextTileId].Mutex.ReleaseMutex();
+
                 nextTileId++;
                 if (nextTileId >= nextTile.Count) nextTile.Clear();
             }
 
           
             running = false;
-
+            character.RwlsPV.ExitReadLock();
         }
 
         private void GetNextTile(Character character)
@@ -118,22 +124,23 @@ namespace Castlenight
                         nextTile = list[shortestId];
                         nextTileId = 0;
                     }
-                } else
+                }
+                else
                 {
-                        List<Tile> list = new List<Tile>();
+                    List<Tile> list = new List<Tile>();
                     int id = 0;
 
-                        int x, y;
-                        do
-                        {
-                            Random random = new Random();
-                            x = random.Next(character.Map.GameConfig.width);
-                            y = random.Next(character.Map.GameConfig.height);
+                    int x, y;
+                    do
+                    {
+                        Random random = new Random();
+                        x = random.Next(character.Map.GameConfig.width);
+                        y = random.Next(character.Map.GameConfig.height);
                         id++;
-                        } while (!character.Map.CanMoveToCellExcludingFutureDestroyed(x, y) || id < GameConfig.numberOfTryPlayerMove);
+                    } while (!character.Map.CanMoveToCellExcludingFutureDestroyed(x, y) || id < GameConfig.numberOfTryPlayerMove);
 
-                        list.Clear();
-                        list = Pathfinding.FindPath(new Vector2(character.PosX, character.PosY), new Vector2(x, y), character.Map, character);
+                    list.Clear();
+                    list = Pathfinding.FindPath(new Vector2(character.PosX, character.PosY), new Vector2(x, y), character.Map, character);
 
                     if ((list != null && list.Count != 0))
                     {

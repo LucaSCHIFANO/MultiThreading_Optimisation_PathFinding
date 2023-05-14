@@ -54,7 +54,7 @@ namespace Castlenight
             this.name = _name;
             this.posX = posX;
             this.posY = posY;
-            this.pv = 10;
+            this.pv = 100;
 
             controller = new RandomCharacterController();
             weapon = new Weapon(5, 1, 2);

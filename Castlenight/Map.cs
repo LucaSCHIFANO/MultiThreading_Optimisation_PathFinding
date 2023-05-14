@@ -32,7 +32,7 @@ namespace Castlenight
         GameConfig gameConfig;
         public GameConfig GameConfig { get => gameConfig; }
 
-        ReaderWriterLock rwls;
+        ReaderWriterLockSlim rwls;
 
         public Map(GameConfig gameConfig)
         {
@@ -111,7 +111,7 @@ namespace Castlenight
                         }
                         try
                         {
-                            rwls.AcquireWriterLock(10000);
+                            rwls.EnterWriteLock();
 
                             for (int i = 0; i < weapons.Count; ++i)
                             {
@@ -124,7 +124,7 @@ namespace Castlenight
                         }
                         finally
                         {
-                            rwls.ReleaseWriterLock();
+                            rwls.ExitWriteLock();
                         }
                     }
 
@@ -143,20 +143,18 @@ namespace Castlenight
             {
                 try
                 {
-                    rwls.AcquireWriterLock(10000);
+                    rwls.EnterWriteLock();
 
                     timeBeforeWeaponDrop = gameConfig.weaponDropTimer;
                     Random random = new Random();
                     for (int i = 0; i < gameConfig.crateDropCount; ++i)
                     {
-                        int id = 0;
                         int x, y;
                         do
                         {
                             x = random.Next(gameConfig.width);
                             y = random.Next(gameConfig.height);
-                            id++;
-                        } while (!CanMoveToCellExcludingFutureDestroyed(x, y) || id >= 5);
+                        } while (!CanMoveToCellExcludingFutureDestroyed(x, y));
 
 
                         WeaponBox weaponBox = new WeaponBox(x, y);
@@ -166,7 +164,7 @@ namespace Castlenight
                 }
                 finally
                 {
-                    rwls.ReleaseWriterLock();
+                    rwls.ExitWriteLock();
                 }
             }
         }
@@ -216,7 +214,7 @@ namespace Castlenight
                         try
                         {
 
-                        rwls.AcquireWriterLock(10000);
+                        rwls.EnterWriteLock();
                         for (int j = 0; j < weapons.Count; ++j)
                         {
                             if (weapons[j].PosX == x && weapons[j].PosY == y)
@@ -228,7 +226,7 @@ namespace Castlenight
                         }
                         finally
                         {
-                            rwls.ReleaseWriterLock();
+                            rwls.ExitWriteLock();
                         }
                         if (!immediate)
                             Thread.Sleep(tiles[y][x].GetCost() * 1000 / GameConfig.PLAYER_MOVE_SPEED);

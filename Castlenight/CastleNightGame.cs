@@ -48,6 +48,8 @@ namespace Castlenight
             //create game
             GameConfig gameConfig = new GameConfig();
             map = new Map(gameConfig);
+            if (gameConfig.playerCount >= gameConfig.width * gameConfig.height) throw new Exception("Too many characters");
+
             for (int i = 0; i < gameConfig.playerCount; i++)
             {
                 int x, y;
@@ -58,6 +60,7 @@ namespace Castlenight
                     y = random.Next(gameConfig.height);
                 } while (!map.CanMoveToCell(x, y));
 
+                map.GetTile(x,y).IsOccupied = true;
                 Character character = new Character("character1", x, y);
                 character.SetId(i);
                 map.AddPlayer(character);

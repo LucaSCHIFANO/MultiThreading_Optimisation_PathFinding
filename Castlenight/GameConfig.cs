@@ -10,10 +10,10 @@
 
         //map size
         public int width = 30;
-        public int height = 21;
+        public int height = 25;
         public const int tileSize = 30;
         //player count
-        public  int playerCount = 10;
+        public  int playerCount = 30;
         //how many weapons are dropped each time
         public  int crateDropCount = 5;
         //how many tiles are destryed each time

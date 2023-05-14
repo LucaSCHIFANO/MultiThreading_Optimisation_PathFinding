@@ -59,7 +59,7 @@ namespace Castlenight
             else if (!character.Map.CheckBeforeMove((int)nextTile[nextTileId].GetPosition().X, (int)nextTile[nextTileId].GetPosition().Y)) GetNextTile(character);
             else
             {
-                Tile tile = character.Map.GetTile(character.PosX, character.PosY);
+                Tile tile = character.Map.GetTile(character.GetPosition());
                 tile.Mutex.WaitOne();
 
                 tile.IsOccupied = false;

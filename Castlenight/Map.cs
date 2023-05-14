@@ -82,11 +82,10 @@ namespace Castlenight
                     for (int i = 0; i < gameConfig.destoyedTilesCount; ++i)
                     {
                         tilesToBeDestroyed.Add(new Vector2(random.Next(width), random.Next(height)));
-                        GetTile((int)tilesToBeDestroyed[i].X, (int)tilesToBeDestroyed[i].Y).SetSelected(gameConfig.executeTileDestructionTimer);
+                        GetTile(tilesToBeDestroyed[i]).SetSelected(gameConfig.executeTileDestructionTimer);
                     }
                     timeBeforeDestruction = gameConfig.executeTileDestructionTimer;
-                    /*for (int i = 0; i < players.Count; ++i)
-                        players[i].TileAboutToBeDestroyed(tilesToBeDestroyed, timeBeforeDestruction);*/
+
                 }
             }
             else if (timeBeforeDestruction > 0)
@@ -200,15 +199,7 @@ namespace Castlenight
         public void RemovePlayer(Character character)
         {
              players.Remove(character);
-            /*for (int i = 0; i < players.Count; ++i)
-            {
-                if (players[i] == character)
-                {
-                    players.RemoveAt(i);
-                    return;
-                }
-            }
-            throw new Exception("Player not present");*/
+
         }
 
         public void MovePlayer(Character character, int x, int y, bool immediate = false)

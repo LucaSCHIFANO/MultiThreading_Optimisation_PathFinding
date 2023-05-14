@@ -155,5 +155,10 @@ namespace Castlenight
         {
             if(_id >= 0) id = _id;
         }
+
+        public Vector2 GetPosition()
+        {
+            return new Vector2(posX, posY);
+        }
     }
 }

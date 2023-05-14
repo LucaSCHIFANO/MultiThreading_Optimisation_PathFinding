@@ -22,6 +22,7 @@ namespace Castlenight
             posY = y;
             Random random = new Random();
             weapon = new Weapon(5 + random.Next(10), 1 + random.Next(5), 5 + random.Next(15));
+
             texture = CastleNightGame.Instance.Content.Load<Texture2D>("crate");
         }
 

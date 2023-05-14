@@ -28,7 +28,7 @@ namespace Castlenight
             running = true;
 
 
-            character.RwlsPV.EnterReadLock();
+            character.RwlsPV.EnterReadLock(); 
 
             if (character.Pv <= 0)
             {
@@ -52,16 +52,16 @@ namespace Castlenight
             }
 
             //pathfinding
-            character.RwlsPV.EnterReadLock();
+            character.RwlsPV.EnterReadLock(); // check to not be killed when moving
 
-            if (nextTile == null || nextTile.Count == 0 || (character.NeedRecheck && GameConfig.needRecalcule))
+            if (nextTile == null || nextTile.Count == 0 || (character.NeedRecheck && GameConfig.needRecalcule)) // if there is no path save
             {
                 character.NeedRecheck = false;
                 GetNextTile(character);
             }
-            else if (!character.Map.CheckBeforeMove((int)nextTile[nextTileId].GetPosition().X, (int)nextTile[nextTileId].GetPosition().Y)) 
+            else if (!character.Map.CheckBeforeMove((int)nextTile[nextTileId].GetPosition().X, (int)nextTile[nextTileId].GetPosition().Y)) // if the next tile is invalid
                 GetNextTile(character);
-            else
+            else // move to the next tile 
             {
                 Tile tile = character.Map.GetTile(character.GetPosition());
                 tile.Mutex.WaitOne();
@@ -92,25 +92,25 @@ namespace Castlenight
                 List<WeaponBox> provWeapon = character.Map.Weapons;
 
 
-                if (count > 0)
+                if (count > 0) // check if there is at least one weapon
                 {
                     int shortestId = -1;
                     int shortestValue = int.MaxValue;
 
                     List<Tile>[] list = new List<Tile>[count];
 
-                    for (int i = 0; i < count; i++)
+                    for (int i = 0; i < count; i++) // check the path the every weapon to see which one is the closest
                     {
                         list[i] = Pathfinding.FindPath(new Vector2(character.PosX, character.PosY), new Vector2(provWeapon[i].PosX, provWeapon[i].PosY), character.Map, character);
 
-                        if ((list[i] != null && list[i].Count != 0))
+                        if ((list[i] != null && list[i].Count != 0)) // check if the path is valid
                         {
-                            if (shortestId == -1)
+                            if (shortestId == -1) // there if a path is already saved
                             {
                                 shortestValue = list[i][list[i].Count - 1].Data[character.Id].GCost;
                                 shortestId = i;
                             }
-                            else if (shortestValue > list[i].Last().Data[character.Id].GCost)
+                            else if (shortestValue > list[i].Last().Data[character.Id].GCost) // check if the new path is better than the old one
                             {
                                 shortestValue = list[i].Last().Data[character.Id].GCost;
                                 shortestId = i;
@@ -118,14 +118,14 @@ namespace Castlenight
                         }
                     }
 
-                    if (shortestId != -1 && list[shortestId] != null)
+                    if (shortestId != -1 && list[shortestId] != null) // if the path is valid, the path is updated
                     {
                         nextTile.Clear();
                         nextTile = list[shortestId];
                         nextTileId = 0;
                     }
                 }
-                else
+                else // if there is no weapon, take a random tile and try to move to it
                 {
                     List<Tile> list = new List<Tile>();
                     int id = 0;
@@ -137,12 +137,12 @@ namespace Castlenight
                         x = random.Next(character.Map.GameConfig.width);
                         y = random.Next(character.Map.GameConfig.height);
                         id++;
-                    } while (!character.Map.CanMoveToCellExcludingFutureDestroyed(x, y) || id < GameConfig.numberOfTryPlayerMove);
+                    } while (!character.Map.CanMoveToCellExcludingFutureDestroyed(x, y) || id < GameConfig.numberOfTryPlayerMove); // if there is too much try without a valid path, abort
 
                     list.Clear();
                     list = Pathfinding.FindPath(new Vector2(character.PosX, character.PosY), new Vector2(x, y), character.Map, character);
 
-                    if ((list != null && list.Count != 0))
+                    if ((list != null && list.Count != 0)) // if a path was found, path updated
                     {
                         nextTile.Clear();
                         nextTile = list;

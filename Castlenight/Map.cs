@@ -24,13 +24,16 @@ namespace Castlenight
         private List<Character> players = new List<Character>();
         public List<Character> Players { get => players; set => players = value; }
 
+
         private List<WeaponBox> weapons = new List<WeaponBox>();
         public List<WeaponBox> Weapons { get => weapons; }
+
 
         double timeBeforeWeaponDrop;
 
         GameConfig gameConfig;
         public GameConfig GameConfig { get => gameConfig; }
+
 
         ReaderWriterLockSlim rwls;
 
@@ -41,6 +44,7 @@ namespace Castlenight
             width = gameConfig.width;
             height = gameConfig.height;
             tiles = new Tile[height][];
+
             rwls = CastleNightGame.Instance.Rwls;
 
             var _size = gameConfig.playerCount;
@@ -79,10 +83,10 @@ namespace Castlenight
                     timeBeforeSelectTileTodestroy = 0;
                     timeBeforeDestruction = gameConfig.weaponDropTimer;
                     Random random = new Random();
-                    for (int i = 0; i < gameConfig.destoyedTilesCount; ++i)
+                    for (int i = 0; i < gameConfig.destoyedTilesCount; ++i) // set tiles as "to be destroyed" 
                     {
                         tilesToBeDestroyed.Add(new Vector2(random.Next(width), random.Next(height)));
-                        GetTile(tilesToBeDestroyed[i]).SetSelected(gameConfig.executeTileDestructionTimer);
+                        GetTile(tilesToBeDestroyed[i]).SetSelected(gameConfig.executeTileDestructionTimer); // active a color change on the tile
                     }
                     timeBeforeDestruction = gameConfig.executeTileDestructionTimer;
 
@@ -99,7 +103,7 @@ namespace Castlenight
                     foreach (var element in tilesToBeDestroyed)
                     {
                         tiles[(int)element.Y][(int)element.X] = new Tile("destroyed", (int)element.X, (int)element.Y, _size);
-                        for (int i = 0; i < players.Count; ++i)
+                        for (int i = 0; i < players.Count; ++i) // could be improved but ><
                         {
                             if (players[i].PosY == (int)element.Y && players[i].PosX == (int)element.X)
                             {
@@ -156,7 +160,7 @@ namespace Castlenight
                             x = random.Next(gameConfig.width);
                             y = random.Next(gameConfig.height);
                             id++;
-                        } while (!CanMoveToCellExcludingFutureDestroyed(x, y) || id <= GameConfig.numberOfTryWeaponDrop);
+                        } while (!CanMoveToCellExcludingFutureDestroyed(x, y) || id <= GameConfig.numberOfTryWeaponDrop); // if there is too much try without a valid path, abort
 
                         if (CanMoveToCellExcludingFutureDestroyed(x, y))
                         {
@@ -252,7 +256,7 @@ namespace Castlenight
         {
             //check if player can move on given cell
             if (tiles[y][x].GetCost() == int.MaxValue) return false;
-            if (tiles[y][x].IsOccupied) return false;
+            if (tiles[y][x].IsOccupied) return false; // check if someone is on the tile
             return true;
         }
 
@@ -260,8 +264,9 @@ namespace Castlenight
         {
             //check if player can move on given cell. Consider invalid cells that will be destroyed soon
             if (tiles[y][x].GetCost() == int.MaxValue)return false;
-            if (GetTile(x, y).IsOccupied) return false;
-            for (int i = 0; i < tilesToBeDestroyed.Count; ++i)
+            if (GetTile(x, y).IsOccupied) return false;// check if someone is on the tile
+
+            for (int i = 0; i < tilesToBeDestroyed.Count; ++i) //check if the tiles will not be destroyed or will be destroyed in more than 0.5sec no matter the destroy speed multiplier
             {
                 if ((int)tilesToBeDestroyed[i].X == x && (int)tilesToBeDestroyed[i].Y == y && timeBeforeDestruction < 0.5 * GameConfig.MAP_DESTRUCTION_SPEED)
                 {
@@ -271,7 +276,7 @@ namespace Castlenight
             return true;
         }
 
-        public bool CheckBeforeMove(int x, int y)
+        public bool CheckBeforeMove(int x, int y) // lock the tile before checking
         {
             GetTile(x, y).Mutex.WaitOne();
             if (CanMoveToCellExcludingFutureDestroyed(x, y)) return true;
@@ -309,7 +314,7 @@ namespace Castlenight
             return Tiles[y][x];
         }
 
-        public Tile GetTile(Vector2 xy)
+        public Tile GetTile(Vector2 xy) 
         {
             return Tiles[(int)xy.Y][(int)xy.X];
         }

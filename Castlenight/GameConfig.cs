@@ -6,18 +6,18 @@
         public const int MAP_DESTRUCTION_SPEED = 3;
         //AI action speed (movement, shoot). Increase to make things go faster
         //Default value should have been 10, but it's unplayable with initial version
-        public const int PLAYER_MOVE_SPEED = 1000;
+        public const int PLAYER_MOVE_SPEED = 10;
 
         //size of the window
         public const int WINDOW_WIDTH = 1280;
         public const int WINDOW_HEIGHT = 720;
 
         //map size
-        public int width = 10;
-        public int height = 10;
+        public int width = 30;
+        public int height = 20;
         public const int tileSize = 30;
 
-        //player count + how many times they'll try to move when no weapon + probability to shoot
+        //player count + how many times they'll try to move when there is no weapon + probability to shoot
         public int playerCount = 30;
         public const int numberOfTryPlayerMove = 5;
         public const int shootProba = 25;
@@ -28,7 +28,7 @@
         public const bool needRecalcule = false;     
         
         //how many tiles are destryed each time
-        public int destoyedTilesCount = 50;
+        public int destoyedTilesCount = 15;
 
 
         //timers for map destruction & weapon drop

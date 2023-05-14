@@ -11,7 +11,7 @@ namespace Castlenight
 {
     internal class Pathfinding
     {
-        public static List<Tile> FindPath(Vector2 _start, Vector2 _end, Map map, Character character)
+        public static List<Tile> FindPath(Vector2 _start, Vector2 _end, Map map, Character character) // A*
         {
             var id = character.Id;
             map.ResetTiles(id);
@@ -61,7 +61,7 @@ namespace Castlenight
             return null;
         }
 
-        static Tile GetLowerCost(ref List<Tile> list, int id)
+        static Tile GetLowerCost(ref List<Tile> list, int id) 
         {
             Tile lowerFCost = list[0];
             for (int i = 0; i < list.Count - 1; i++)
@@ -79,7 +79,7 @@ namespace Castlenight
             return 14 * Math.Min(xDistance, yDistance) + 10 * remaining * b.GetCost();
         }
 
-        static List<Tile> CalculatePath(Tile endSwitch, int id)
+        static List<Tile> CalculatePath(Tile endSwitch, int id) // reverse the path
         {
             List<Tile> list = new List<Tile>();
 

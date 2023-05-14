@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace Castlenight
 {
-    class Params
+    class Params // Character sends to the thread
     {
         public Character character;
 
@@ -27,7 +27,7 @@ namespace Castlenight
         public Map Map { get { return map; } }
         public static CastleNightGame Instance { get; private set; }
 
-        List<Thread> threadList = new List<Thread>();
+        List<Thread> threadList = new List<Thread>(); // list of every character thread 
 
         ReaderWriterLockSlim rwls = new ReaderWriterLockSlim();
         public ReaderWriterLockSlim Rwls { get => rwls; }
@@ -61,9 +61,11 @@ namespace Castlenight
                 } while (!map.CanMoveToCell(x, y));
 
 
+                //create character and set his id
                 Character character = new Character("character1", x, y);
                 character.SetId(i);
 
+                // set the tile as "occupied" and add the player to the playerList 
                 map.GetTile(x,y).IsOccupied = true;
                 map.AddPlayer(character);
                 
@@ -105,11 +107,11 @@ namespace Castlenight
             base.Draw(gameTime);
         }
 
-        void CheckEndGame(Object obj)
+        void CheckEndGame(Object obj) // check if there is one survivor ( or if everyone is dead :\ )
         {
             Debug.WriteLine("\n Start ! \n");
 
-            Thread.Sleep(3000);
+            Thread.Sleep(1000);
             bool isRunning = true;
             do
             {

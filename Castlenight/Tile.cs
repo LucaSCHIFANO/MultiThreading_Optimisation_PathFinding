@@ -13,7 +13,7 @@ namespace Castlenight
         int posX = 0;
         int posY = 0;
 
-        List<TilesData> data;
+        List<TilesData> data; // a "tilesdata" for each character to make the A* work
         public List<TilesData> Data { get => data; set => data = value; }
 
         

@@ -54,18 +54,22 @@ namespace Castlenight
             this.name = _name;
             this.posX = posX;
             this.posY = posY;
-            this.pv = 100; // 100;
+            this.pv = 100;
 
             controller = new RandomCharacterController();
             weapon = new Weapon(5, 1, 2);
 
+            // get value once and save them
+
             rwlsPV= new ReaderWriterLockSlim();
+
             shootProba = GameConfig.shootProba;
             
             ParameterizedThreadStart parameterizedThreadStart = new ParameterizedThreadStart(UpdateCharacter);
             thread = new Thread(UpdateCharacter);
             thread.IsBackground = true;
 
+            //get the texture here and not in each draw
             texture = CastleNightGame.Instance.Content.Load<Texture2D>(name);
             map = CastleNightGame.Instance.Map; 
         }
@@ -103,7 +107,7 @@ namespace Castlenight
         //returns a score based on damage & kill
         public int TakeDamage(int damage)
         {
-            rwlsPV.EnterWriteLock();
+            rwlsPV.EnterWriteLock(); // check to not kill a character if he is moving
             int _score = damage;
             if (pv < 0) _score = -10;
             else
@@ -123,7 +127,7 @@ namespace Castlenight
         //Kill the unit immediately, used when unit is on a destroyed tile
         public void Kill()
         {
-            rwlsPV.EnterWriteLock();
+            rwlsPV.EnterWriteLock(); //check to not kill a character if he is moving
             pv = 0;
             score -= 1000;
             Debug.WriteLine("Player dead by falling in a hole");

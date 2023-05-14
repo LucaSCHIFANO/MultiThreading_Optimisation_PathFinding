@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
@@ -183,17 +184,23 @@ namespace Castlenight
 
         public void Draw(GraphicsDeviceManager graphics, GameTime gameTime)
         {
+            var spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
+
+            spriteBatch.Begin();
+
             for (int i = 0; i < width; ++i)
             {
                 for (int j = 0; j < height; ++j)
                 {
-                    tiles[j][i].Draw(graphics, gameTime, (float)timeBeforeDestruction);
+                    tiles[j][i].Draw(graphics, gameTime, (float)timeBeforeDestruction, spriteBatch);
                 }
             }
             for (int i = 0; i < weapons.Count; ++i)
-                weapons[i].Draw(graphics, gameTime);
+                weapons[i].Draw(graphics, gameTime, spriteBatch);
             for (int i = 0; i < players.Count; ++i)
-                players[i].Draw(graphics, gameTime);
+                players[i].Draw(graphics, gameTime, spriteBatch);
+
+            spriteBatch.End();
         }
 
         #region Player Management
@@ -213,42 +220,42 @@ namespace Castlenight
         public void MovePlayer(Character character, int x, int y, bool immediate = false)
         {
 
-                    if (character.Pv <= 0)
-                        throw new Exception("Character is dead");
-                    if (CanMoveToCell(x, y))
+            if (character.Pv <= 0)
+                throw new Exception("Character is dead");
+            if (CanMoveToCell(x, y))
+            {
+                character.SetPosition(x, y);
+
+                try
+                {
+
+                    rwls.EnterWriteLock();
+                    for (int j = 0; j < weapons.Count; ++j)
                     {
-                        character.SetPosition(x, y);
-
-                        try
+                        if (weapons[j].PosX == x && weapons[j].PosY == y)
                         {
-
-                        rwls.EnterWriteLock();
-                        for (int j = 0; j < weapons.Count; ++j)
-                        {
-                            if (weapons[j].PosX == x && weapons[j].PosY == y)
-                            {
                             character.weapon = weapons[j].weapon;
-                                weapons.RemoveAt(j);
-                            }
+                            weapons.RemoveAt(j);
                         }
-                        }
-                        finally
-                        {
-                            rwls.ExitWriteLock();
-                        }
-                        if (!immediate)
-                            Thread.Sleep(tiles[y][x].GetCost() * 1000 / GameConfig.PLAYER_MOVE_SPEED);
                     }
-                    else if (tiles[y][x].GetCost() == int.MaxValue)
-                    {
-                        character.Kill();
-                    }
-                    else
-                    {
-                        throw new Exception("Cell is invalid");
-                    }
+                }
+                finally
+                {
+                    rwls.ExitWriteLock();
+                }
+                if (!immediate)
+                    Thread.Sleep(tiles[y][x].GetCost() * 1000 / GameConfig.PLAYER_MOVE_SPEED);
+            }
+            else if (tiles[y][x].GetCost() == int.MaxValue)
+            {
+                character.Kill();
+            }
+            else
+            {
+                throw new Exception("Cell is invalid");
+            }
 
-                    return;
+            return;
 
         }
 
@@ -268,7 +275,7 @@ namespace Castlenight
 
             for (int i = 0; i < tilesToBeDestroyed.Count; ++i) //check if the tiles will not be destroyed or will be destroyed in more than 0.5sec no matter the destroy speed multiplier
             {
-                if ((int)tilesToBeDestroyed[i].X == x && (int)tilesToBeDestroyed[i].Y == y && timeBeforeDestruction < 0.5 * GameConfig.MAP_DESTRUCTION_SPEED)
+                if ((int)tilesToBeDestroyed[i].X == x && (int)tilesToBeDestroyed[i].Y == y && timeBeforeDestruction < gameConfig.okayToCrossTimer * GameConfig.MAP_DESTRUCTION_SPEED)
                 {
                     return false;
                 }

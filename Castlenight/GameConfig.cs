@@ -6,7 +6,7 @@
         public const int MAP_DESTRUCTION_SPEED = 3;
         //AI action speed (movement, shoot). Increase to make things go faster
         //Default value should have been 10, but it's unplayable with initial version
-        public const int PLAYER_MOVE_SPEED = 10;
+        public const int PLAYER_MOVE_SPEED = 1000;
 
         //size of the window
         public const int WINDOW_WIDTH = 1280;
@@ -30,10 +30,14 @@
         //how many tiles are destryed each time
         public int destoyedTilesCount = 15;
 
-
         //timers for map destruction & weapon drop
         public int weaponDropTimer = 7;
         public int triggerTileDestructionTimer = 10;
         public int executeTileDestructionTimer = 5;
+
+        //if the tiles will be destroyed in more than 0.5sec (no matter the destroy speed multiplier), its can be crossed
+        public float okayToCrossTimer = 0.5f;
+
+
     }
 }

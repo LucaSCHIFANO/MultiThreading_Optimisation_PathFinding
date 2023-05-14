@@ -46,12 +46,8 @@ namespace Castlenight
         }
 
 
-        public void Draw(GraphicsDeviceManager graphics, GameTime gameTime, float destructionTime)
+        public void Draw(GraphicsDeviceManager graphics, GameTime gameTime, float destructionTime, SpriteBatch spriteBatch)
         {
-            var spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
-
-
-            spriteBatch.Begin();
             if (selected)
             {
                 value = 1 - (destructionTime / maxValue);
@@ -59,7 +55,7 @@ namespace Castlenight
                 if(value == 1)selected= false;
             }
             else spriteBatch.Draw(texture, new Rectangle(posX * GameConfig.tileSize, posY * GameConfig.tileSize, GameConfig.tileSize, GameConfig.tileSize), Color.White);
-            spriteBatch.End();
+
         }
 
         public int GetCost()

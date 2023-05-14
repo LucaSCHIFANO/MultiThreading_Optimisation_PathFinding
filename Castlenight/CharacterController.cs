@@ -22,7 +22,6 @@ namespace Castlenight
 
         public void ComputeAndExecuteAction(Character character)
         {
-            //Random action controller: will do something random (but valid) on each tick
             if (running)
                 throw new Exception("ComputeAndExecuteAction called twice");
             running = true;

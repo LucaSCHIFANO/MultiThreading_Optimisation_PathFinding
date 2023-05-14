@@ -54,7 +54,7 @@ namespace Castlenight
             this.name = _name;
             this.posX = posX;
             this.posY = posY;
-            this.pv = 100;
+            this.pv = 10;
 
             controller = new RandomCharacterController();
             weapon = new Weapon(5, 1, 2);
@@ -85,13 +85,11 @@ namespace Castlenight
                 controller.ComputeAndExecuteAction(this);
         }
 
-        public void Draw(GraphicsDeviceManager graphics, GameTime gameTime)
+        public void Draw(GraphicsDeviceManager graphics, GameTime gameTime, SpriteBatch spriteBatch)
         {
-            var spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
-
-            spriteBatch.Begin();
+            
             spriteBatch.Draw(texture, new Rectangle(posX * GameConfig.tileSize, posY * GameConfig.tileSize, GameConfig.tileSize, GameConfig.tileSize), Color.White);
-            spriteBatch.End();
+            
         }
 
         public void SetPosition(int posX, int posY)

@@ -50,8 +50,29 @@ namespace Castlenight
             }
 
             //pathfinding
+            bool isReturning = false;
+            if (character.NeedRecheck)
+            {
+                try
+                {
+                    CastleNightGame.Instance.Rwls.AcquireReaderLock(1);
+                    character.NeedRecheck = false;
+                    GetNextTile(character);
+                    isReturning= true;
+                }
+                finally
+                {
+                    CastleNightGame.Instance.Rwls.ReleaseReaderLock();
+                }
+            }
 
-            if (nextTile == null || nextTile.Count == 0 || character.NeedRecheck)
+            if (isReturning)
+            {
+                running = false;
+                return;
+            }
+
+            if (nextTile == null || nextTile.Count == 0)
             {
                 character.NeedRecheck = false;
                 GetNextTile(character);
@@ -80,7 +101,7 @@ namespace Castlenight
         {
             try
             {
-                CastleNightGame.Instance.Rwls.EnterReadLock();
+                CastleNightGame.Instance.Rwls.AcquireReaderLock(100000);
 
                 int count = character.Map.Weapons.Count;
                 List<WeaponBox> provWeapon = character.Map.Weapons;
@@ -141,7 +162,7 @@ namespace Castlenight
             }
             finally
             {
-                CastleNightGame.Instance.Rwls.ExitReadLock();
+                CastleNightGame.Instance.Rwls.ReleaseReaderLock();
             }
         }
     }

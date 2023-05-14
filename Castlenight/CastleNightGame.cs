@@ -29,8 +29,8 @@ namespace Castlenight
 
         List<Thread> threadList = new List<Thread>();
 
-        ReaderWriterLockSlim rwls = new ReaderWriterLockSlim();
-        public ReaderWriterLockSlim Rwls { get => rwls; }
+        ReaderWriterLock rwls = new ReaderWriterLock();
+        public ReaderWriterLock Rwls { get => rwls; }
 
         public CastleNightGame()
         {

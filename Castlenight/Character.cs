@@ -30,10 +30,6 @@ namespace Castlenight
         public ICharacterController Controller { get => controller; }
 
 
-        static Mutex mutex;
-        public static Mutex Mutex { get => mutex; }
-
-
         Thread thread = null;
         public Thread Thread { get => thread; }
 
@@ -54,8 +50,6 @@ namespace Castlenight
 
             controller = new RandomCharacterController();
             weapon = new Weapon(5, 1, 2);
-
-            if (Character.Mutex == null) mutex = new Mutex();
             
             ParameterizedThreadStart parameterizedThreadStart = new ParameterizedThreadStart(UpdateCharacter);
             thread = new Thread(UpdateCharacter);

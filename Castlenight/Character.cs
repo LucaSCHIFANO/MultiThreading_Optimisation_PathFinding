@@ -115,13 +115,6 @@ namespace Castlenight
             return score;
         }
 
-        //Tells player a tile is about to be destroyed
-        public void TileAboutToBeDestroyed(List<Vector2> tilesToBeDestroyed, double timeBeforeDestruction)
-        {
-            if (controller != null)
-                controller.TileAboutToBeDestroyed(tilesToBeDestroyed, timeBeforeDestruction);
-        }
-
         //Kill the unit immediately, used when unit is on a desptroyed tile
         public void Kill()
         {

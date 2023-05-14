@@ -80,10 +80,13 @@ namespace Castlenight
                     timeBeforeDestruction = gameConfig.weaponDropTimer;
                     Random random = new Random();
                     for (int i = 0; i < gameConfig.destoyedTilesCount; ++i)
+                    {
                         tilesToBeDestroyed.Add(new Vector2(random.Next(width), random.Next(height)));
+                        GetTile((int)tilesToBeDestroyed[i].X, (int)tilesToBeDestroyed[i].Y).SetSelected(gameConfig.executeTileDestructionTimer);
+                    }
                     timeBeforeDestruction = gameConfig.executeTileDestructionTimer;
-                    for (int i = 0; i < players.Count; ++i)
-                        players[i].TileAboutToBeDestroyed(tilesToBeDestroyed, timeBeforeDestruction);
+                    /*for (int i = 0; i < players.Count; ++i)
+                        players[i].TileAboutToBeDestroyed(tilesToBeDestroyed, timeBeforeDestruction);*/
                 }
             }
             else if (timeBeforeDestruction > 0)
@@ -125,6 +128,8 @@ namespace Castlenight
                             rwls.ExitWriteLock();
                         }
                     }
+
+                    tilesToBeDestroyed.Clear();
                 }
             }
             else
@@ -175,7 +180,7 @@ namespace Castlenight
             {
                 for (int j = 0; j < height; ++j)
                 {
-                    tiles[j][i].Draw(graphics, gameTime);
+                    tiles[j][i].Draw(graphics, gameTime, (float)timeBeforeDestruction);
                 }
             }
             for (int i = 0; i < weapons.Count; ++i)
@@ -194,7 +199,8 @@ namespace Castlenight
 
         public void RemovePlayer(Character character)
         {
-            for (int i = 0; i < players.Count; ++i)
+             players.Remove(character);
+            /*for (int i = 0; i < players.Count; ++i)
             {
                 if (players[i] == character)
                 {
@@ -202,16 +208,12 @@ namespace Castlenight
                     return;
                 }
             }
-            throw new Exception("Player not present");
+            throw new Exception("Player not present");*/
         }
 
         public void MovePlayer(Character character, int x, int y, bool immediate = false)
         {
-            //Move character on given tile is it's empty (no player) & valid. grab weapon that is on it
-/*            for (int i = 0; i < players.Count; ++i)
-            {
-                if (players[i] == character)
-                {*/
+
                     if (character.Pv <= 0)
                         throw new Exception("Character is dead");
                     if (CanMoveToCell(x, y))
@@ -248,9 +250,7 @@ namespace Castlenight
                     }
 
                     return;
-/*                }
-            }*/
-            //throw new Exception("Player not present");
+
         }
 
         public bool CanMoveToCell(int x, int y)

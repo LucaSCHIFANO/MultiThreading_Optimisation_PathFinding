@@ -16,7 +16,7 @@ namespace Castlenight
         List<TilesData> data;
         public List<TilesData> Data { get => data; set => data = value; }
 
-        public bool selected;
+        
         Texture2D texture;
 
         bool isOccupied;
@@ -25,6 +25,9 @@ namespace Castlenight
         Mutex mutex;
         public Mutex Mutex { get => mutex; }
 
+        bool selected;
+        float maxValue;
+        float value;
 
 
         public Tile(string _name, int posX, int posY, int size) 
@@ -43,12 +46,18 @@ namespace Castlenight
         }
 
 
-        public void Draw(GraphicsDeviceManager graphics, GameTime gameTime)
+        public void Draw(GraphicsDeviceManager graphics, GameTime gameTime, float destructionTime)
         {
             var spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
 
+
             spriteBatch.Begin();
-            if(selected)spriteBatch.Draw(texture, new Rectangle(posX* GameConfig.tileSize, posY* GameConfig.tileSize, GameConfig.tileSize, GameConfig.tileSize), Color.Red);
+            if (selected)
+            {
+                value = 1 - (destructionTime / maxValue);
+                spriteBatch.Draw(texture, new Rectangle(posX * GameConfig.tileSize, posY * GameConfig.tileSize, GameConfig.tileSize, GameConfig.tileSize), new Color(1, 1 - value, 1 - value));
+                if(value == 1)selected= false;
+            }
             else spriteBatch.Draw(texture, new Rectangle(posX * GameConfig.tileSize, posY * GameConfig.tileSize, GameConfig.tileSize, GameConfig.tileSize), Color.White);
             spriteBatch.End();
         }
@@ -69,6 +78,12 @@ namespace Castlenight
         public Vector2 GetPosition()
         {
             return new Vector2(posX, posY);
+        }
+
+        public void SetSelected(float _maxValue)
+        {
+            selected = true;
+            maxValue = _maxValue;
         }
     }
 

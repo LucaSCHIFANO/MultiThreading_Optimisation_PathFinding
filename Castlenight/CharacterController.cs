@@ -9,7 +9,6 @@ namespace Castlenight
     public interface ICharacterController
     {
         public void ComputeAndExecuteAction(Character character);
-        void TileAboutToBeDestroyed(List<Vector2> tilesToBeDestroyed, double timeBeforeDestruction);
     }
 
     public class RandomCharacterController : ICharacterController
@@ -29,13 +28,11 @@ namespace Castlenight
             running = true;
 
 
-            //Character.Mutex.WaitOne();
 
 
             if (character.Pv <= 0)
             {
                 running = false;
-                //Character.Mutex.ReleaseMutex();
                 return;
             }
 
@@ -48,7 +45,6 @@ namespace Castlenight
                 {
                     character.Score += character.weapon.Shoot(targets[random.Next(targets.Count)]);
                     running = false;
-                    //Character.Mutex.ReleaseMutex();
                     return;
                 }
             }
@@ -76,15 +72,8 @@ namespace Castlenight
             }
 
           
-
-
-            //Character.Mutex.ReleaseMutex();
             running = false;
 
-        }
-
-        public void TileAboutToBeDestroyed(List<Vector2> tilesToBeDestroyed, double timeBeforeDestruction)
-        {
         }
 
         private void GetNextTile(Character character)

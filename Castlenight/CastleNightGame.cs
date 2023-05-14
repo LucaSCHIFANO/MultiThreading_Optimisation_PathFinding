@@ -38,8 +38,8 @@ namespace Castlenight
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            _graphics.PreferredBackBufferWidth = 1280;
-            _graphics.PreferredBackBufferHeight = 720;
+            _graphics.PreferredBackBufferWidth = GameConfig.WINDOW_WIDTH;
+            _graphics.PreferredBackBufferHeight = GameConfig.WINDOW_HEIGHT;
             _graphics.ApplyChanges();
         }
 
@@ -60,10 +60,13 @@ namespace Castlenight
                     y = random.Next(gameConfig.height);
                 } while (!map.CanMoveToCell(x, y));
 
-                map.GetTile(x,y).IsOccupied = true;
+
                 Character character = new Character("character1", x, y);
                 character.SetId(i);
+
+                map.GetTile(x,y).IsOccupied = true;
                 map.AddPlayer(character);
+                
                 threadList.Add(character.Thread);
                 character.StartThread();
             }

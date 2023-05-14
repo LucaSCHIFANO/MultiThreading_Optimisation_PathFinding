@@ -30,15 +30,13 @@ namespace Castlenight
         public ICharacterController Controller { get => controller; }
 
 
-        static Mutex mutex;
-        public static Mutex Mutex { get => mutex; }
-
-
         Thread thread = null;
         public Thread Thread { get => thread; }
 
+
         bool needRecheck;
         public bool NeedRecheck { get => needRecheck; set => needRecheck = value; }
+
 
         Map map;
         public Map Map { get => map; }
@@ -50,12 +48,10 @@ namespace Castlenight
             this.name = _name;
             this.posX = posX;
             this.posY = posY;
-            this.pv = 1000; // 100;
+            this.pv = 100; // 100;
 
             controller = new RandomCharacterController();
             weapon = new Weapon(5, 1, 2);
-
-            if (Character.Mutex == null) mutex = new Mutex();
             
             ParameterizedThreadStart parameterizedThreadStart = new ParameterizedThreadStart(UpdateCharacter);
             thread = new Thread(UpdateCharacter);

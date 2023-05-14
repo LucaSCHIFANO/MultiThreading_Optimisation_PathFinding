@@ -8,17 +8,24 @@
         //Default value should have been 10, but it's unplayable with initial version
         public const int PLAYER_MOVE_SPEED = 1000;
 
+        //size of the window
+        public const int WINDOW_WIDTH = 1280;
+        public const int WINDOW_HEIGHT = 720;
+
         //map size
         public int width = 30;
         public int height = 25;
         public const int tileSize = 30;
-        //player count
+
+        //player count + how many times they'll try to move when no weapon
         public int playerCount = 30;
         public const int numberOfTryPlayerMove = 5;
-        //how many weapons are dropped each time
+
+        //how many weapons are dropped each time and if the pathfinding of player has to be recalculed
         public int crateDropCount = 5;
         public const int numberOfTryWeaponDrop = 15;
-        public const bool needRecalcule = false;        
+        public const bool needRecalcule = false;     
+        
         //how many tiles are destryed each time
         public int destoyedTilesCount = 10;
 
